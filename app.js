@@ -36,12 +36,12 @@ const setLogoColor = (type, level) => {
 }
 
 setLogoColor(
-  ~~(Date.now() / interval) % typeLength, 
+  ~~(Date.now() / interval) % typeLength,
   ~~(Date.now() / (interval / levelLength)) % levelLength
 )
 
 logoWrapper.onclick = () => setLogoColor(
-  ~~(Math.random() * typeLength), 
+  ~~(Math.random() * typeLength),
   ~~(Math.random() * levelLength)
 )
 
