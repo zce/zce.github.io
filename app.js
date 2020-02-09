@@ -52,7 +52,7 @@ const quality = 0.5
 const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
 const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
 
-const url = `https://source.unsplash.com/random/${width * quality}x${height * quality}`
+const url = `https://source.unsplash.com/random/${~(width * quality)}x${~(height * quality)}`
 
 const background = document.querySelector('.background')
 const svg = background.querySelector('svg')
