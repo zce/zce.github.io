@@ -7,6 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ site.slogan }}">
   <meta name="theme-color" content="#454d5d">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{{ site.title }}</title>
@@ -36,7 +37,7 @@
   <ul class="navigation">
     {% for item in site.links %}
     <li>
-      <a href="{{ item.href }}" target="{{ item.target }}">{{ item.text }}</a>
+      <a href="{{ item.href }}" target="{{ item.target }}" rel="noreferrer noopener">{{ item.text }}</a>
     </li>
     {% endfor %}
   </ul>

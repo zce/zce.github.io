@@ -57,6 +57,7 @@ const url = `https://source.unsplash.com/random/${~(width * quality)}x${~(height
 const background = document.querySelector('.background')
 const svg = background.querySelector('svg')
 const img = document.createElement('img')
+img.alt = 'Unsplash Source'
 background.appendChild(img)
 
 fetch(url).then(res => res.blob()).then(blob => {
