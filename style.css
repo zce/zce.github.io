@@ -53,7 +53,6 @@ body {
 
 .title,
 .slogan {
-  font-family: 'Nothing You Could Do', cursive;
   animation: fadeIn 1s both;
 }
 
@@ -61,6 +60,7 @@ body {
   margin: 0 0 1rem;
   color: #fff;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+  font-family: 'Dancing Script', cursive;
   font-size: 5rem;
   animation-delay: 0.15s;
 }
@@ -69,6 +69,7 @@ body {
   margin: 0 0 4rem;
   color: #eee;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.6);
+  font-family: 'Nothing You Could Do', cursive;
   font-size: 2rem;
   animation-delay: 0.4s;
 }
