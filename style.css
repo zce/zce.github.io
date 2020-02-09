@@ -10,6 +10,15 @@
   }
 }
 
+@keyframes fade {
+  from { 
+    opacity: 1; 
+  }
+  to { 
+    opacity: 0; 
+  }
+}
+
 html,
 body {
   height: 100%;
@@ -22,7 +31,7 @@ body {
   justify-content: center;
   margin: 0;
   background: #000;
-  font-family: 'Exo 2', system-ui, sans-serif;
+  font-family: system-ui, sans-serif;
   text-align: center;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-font-smoothing: antialiased;
@@ -43,7 +52,7 @@ body {
 
 .title,
 .slogan {
-  font-weight: 400;
+  font-family: 'Caveat', cursive;
   animation: fadeIn 1s both;
 }
 
@@ -69,6 +78,7 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
+  font-family: 'Exo 2', sans-serif;
   animation: fadeIn 1s 0.7s both;
 }
 
@@ -107,11 +117,6 @@ body {
   z-index: -1;
   overflow: hidden;
   background-size: 0;
-}
-
-@keyframes fade {
-  from { opacity: 1; }
-  to { opacity: 0; }
 }
 
 .background > svg {
