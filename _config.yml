@@ -17,6 +17,9 @@ links:
   - text: Email
     href: mailto:w@zce.me
     target: _self
-  - text: Discuss
-    href: https://github.com/zce/discuss/issues
+  - text: Donate
+    href: https://img.zce.me/qrcode/alipay.jpg
     target: _blank
+  # - text: Discuss
+  #   href: https://github.com/zce/discuss/issues
+  #   target: _blank
