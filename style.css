@@ -51,27 +51,23 @@ body {
   transition: fill 0.3s;
 }
 
-.title,
-.slogan {
-  animation: fadeIn 1s both;
-}
-
 .title {
-  margin: 0 0 1rem;
+  margin: 0 1rem 1rem;
   color: #fff;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
   font-family: 'Frijole', cursive;
-  font-size: 5rem;
-  animation-delay: 0.15s;
+  font-size: calc(3rem + 2vw);
+  font-weight: 400;
+  animation: fadeIn 1s 0.15s both;
 }
 
 .slogan {
-  margin: 0 0 4rem;
+  margin: 0 1rem 4rem;
   color: #eee;
   text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.6);
   font-family: 'Nothing You Could Do', cursive;
-  font-size: 2rem;
-  animation-delay: 0.4s;
+  font-size: calc(1.8rem + 0.5vw);
+  animation: fadeIn 1s 0.4s both;
 }
 
 .navigation {
