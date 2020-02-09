@@ -14,6 +14,7 @@
   from { 
     opacity: 1; 
   }
+  
   to { 
     opacity: 0; 
   }
@@ -52,7 +53,7 @@ body {
 
 .title,
 .slogan {
-  font-family: 'Caveat', cursive;
+  font-family: 'Nothing You Could Do', cursive;
   animation: fadeIn 1s both;
 }
 
@@ -91,7 +92,7 @@ body {
 .navigation a {
   color: #99e9f2;
   text-decoration: none;
-  transition: color 0.5s, text-shadow 0.5s;
+  transition: color 0.3s, text-shadow 0.3s;
 }
 
 .navigation a:hover {
@@ -137,9 +138,9 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   transition-duration: 1s;
   transition-property: opacity, filter, transform;
-  object-fit: cover;
 }
 
 .background > svg + img {

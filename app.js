@@ -1,6 +1,6 @@
-var interval = 60 * 1000
+const interval = 60 * 1000
 
-var colors = [
+const colors = [
   ['#f8f9fa', '#f1f3f5', '#e9ecef', '#dee2e6', '#ced4da', '#adb5bd', '#868e96', '#495057', '#343a40', '#212529'], // Gray
   ['#fff5f5', '#ffe3e3', '#ffc9c9', '#ffa8a8', '#ff8787', '#ff6b6b', '#fa5252', '#f03e3e', '#e03131', '#c92a2a'], // Red
   ['#fff0f6', '#ffdeeb', '#fcc2d7', '#faa2c1', '#f783ac', '#f06595', '#e64980', '#d6336c', '#c2255c', '#a61e4d'], // Pink
@@ -16,13 +16,13 @@ var colors = [
   ['#fff4e6', '#ffe8cc', '#ffd8a8', '#ffc078', '#ffa94d', '#ff922b', '#fd7e14', '#f76707', '#e8590c', '#d9480f'] // Orange
 ]
 
-var logoWrapper = document.querySelector('.logo')
-var logoColor = logoWrapper.querySelector('g > path')
+const logoWrapper = document.querySelector('.logo')
+const logoColor = logoWrapper.querySelector('g > path')
 
-var typeLength = colors.length
-var levelLength = colors[0].length
+const typeLength = colors.length
+const levelLength = colors[0].length
 
-function setLogoColor (type, level) {
+const setLogoColor = (type, level) => {
   logoColor.style.fill = colors[type][level]
   console.log(
     `%cOC- %c ${type} %c %c ${level} %c → %c  `,
@@ -40,34 +40,28 @@ setLogoColor(
   ~~(Date.now() / (interval / levelLength)) % levelLength
 )
 
-logoWrapper.onclick = function () {
-  setLogoColor(
-    ~~(Math.random() * typeLength), 
-    ~~(Math.random() * levelLength)
-  )
-}
+logoWrapper.onclick = () => setLogoColor(
+  ~~(Math.random() * typeLength), 
+  ~~(Math.random() * levelLength)
+)
 
 // ----------------------------------------
 
-var quality = 0.5
+const quality = 0.5
 
-var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
 
-var url = `https://source.unsplash.com/random/${width * quality}x${height * quality}`
+const url = `https://source.unsplash.com/random/${width * quality}x${height * quality}`
 
-var background = document.querySelector('.background')
-var svg = background.querySelector('svg')
+const background = document.querySelector('.background')
+const svg = background.querySelector('svg')
+const img = document.createElement('img')
+background.appendChild(img)
 
-var temp = new Image()
-temp.src = url
-temp.onload = function () {
-  var img = document.createElement('img')
-  img.src = url
-  background.appendChild(img)
-
-  setTimeout(function () {
-    // next tick
-    svg.remove()
-  }, 0)
-}
+fetch(url).then(res => res.blob()).then(blob => {
+  img.src = URL.createObjectURL(blob)
+  svg.remove()
+  // next tick
+  // setTimeout(() => svg.remove(), 0)
+})
