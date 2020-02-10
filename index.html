@@ -96,7 +96,7 @@
       animation: fadeIn 1s 0.7s both;
     }
 
-    .navigation li+li::before {
+    .navigation li + li::before {
       margin: 0.5rem;
       color: #aaa;
       content: '·';
@@ -133,17 +133,17 @@
       background-size: 0;
     }
 
-    .background>svg {
+    .background > svg {
       width: 100px;
       height: 100px;
     }
 
-    .background>svg>path {
+    .background > svg > path {
       fill: #454d5d;
       animation: fade 0.8s steps(8) infinite;
     }
 
-    .background>img {
+    .background > img {
       position: fixed;
       top: 0;
       right: 0;
@@ -156,7 +156,7 @@
       transition-property: opacity, filter, transform;
     }
 
-    .background>svg+img {
+    .background > svg + img {
       opacity: 0;
       filter: blur(5rem);
       transform: scale(1.5);
@@ -235,7 +235,7 @@
   <script>
     // logo ------------------------------------------------------------------------
 
-    ; (() => {
+    ;(() => {
       const interval = 60 * 1000
 
       const colors = [
@@ -284,30 +284,30 @@
       )
     })()
 
-      // background ------------------------------------------------------------------
+    // background ------------------------------------------------------------------
 
-      ; (() => {
-        const quality = 0.5
+    ;(() => {
+      const quality = 0.5
 
-        const width = window.innerWidth || document.documentElement.clientWidth
-        const height = window.innerHeight || document.documentElement.clientHeight
+      const width = window.innerWidth || document.documentElement.clientWidth
+      const height = window.innerHeight || document.documentElement.clientHeight
 
-        const url = `https://source.unsplash.com/random/${~~(width * quality)}x${~~(height * quality)}`
+      const url = `https://source.unsplash.com/random/${~~(width * quality)}x${~~(height * quality)}`
 
-        const background = document.querySelector('.background')
-        const svg = background.querySelector('svg')
+      const background = document.querySelector('.background')
+      const svg = background.querySelector('svg')
 
-        const img = document.createElement('img')
-        img.alt = 'Unsplash Source'
-        background.appendChild(img)
+      const img = document.createElement('img')
+      img.alt = 'Unsplash Source'
+      background.appendChild(img)
 
-        window.fetch(url).then(res => res.blob()).then(blob => {
-          img.src = URL.createObjectURL(blob)
-          svg.remove()
-          // next tick
-          // setTimeout(() => svg.remove(), 0)
-        })
-      })()
+      window.fetch(url).then(res => res.blob()).then(blob => {
+        img.src = URL.createObjectURL(blob)
+        svg.remove()
+        // next tick
+        // setTimeout(() => svg.remove(), 0)
+      })
+    })()
   </script>
 </body>
 
