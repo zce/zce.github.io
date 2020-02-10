@@ -4,6 +4,7 @@
 ---
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +13,177 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{{ site.title }}</title>
   <link href="https://fonts.googleapis.com/css?family=Frijole|Nothing+You+Could+Do|Exo+2&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(100%) scale(0.4);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      background: #000;
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+
+    .logo {
+      margin: 0 auto 4rem;
+      width: 12.5rem;
+      height: 12.5rem;
+      animation: fadeIn 1s both;
+    }
+
+    .logo path {
+      transition: fill 0.3s;
+    }
+
+    .title {
+      margin: 0 1rem 1rem;
+      color: #fff;
+      text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+      font-family: 'Frijole', cursive;
+      font-size: calc(3rem + 2vw);
+      font-weight: 400;
+      animation: fadeIn 1s 0.15s both;
+    }
+
+    .slogan {
+      margin: 0 1rem 4rem;
+      color: #eee;
+      text-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.6);
+      font-family: 'Nothing You Could Do', cursive;
+      font-size: calc(1.8rem + 0.5vw);
+      animation: fadeIn 1s 0.4s both;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-family: 'Exo 2', sans-serif;
+      animation: fadeIn 1s 0.7s both;
+    }
+
+    .navigation li+li::before {
+      margin: 0.5rem;
+      color: #aaa;
+      content: '·';
+    }
+
+    .navigation a {
+      color: #99e9f2;
+      text-decoration: none;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    .navigation a:hover {
+      color: #22b8cf;
+      text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5);
+    }
+
+    .navigation a:focus {
+      outline: 0;
+      color: #3bc9db;
+      text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.5);
+    }
+
+    .background {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      overflow: hidden;
+      background-size: 0;
+    }
+
+    .background>svg {
+      width: 100px;
+      height: 100px;
+    }
+
+    .background>svg>path {
+      fill: #454d5d;
+      animation: fade 0.8s steps(8) infinite;
+    }
+
+    .background>img {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition-duration: 1s;
+      transition-property: opacity, filter, transform;
+    }
+
+    .background>svg+img {
+      opacity: 0;
+      filter: blur(5rem);
+      transform: scale(1.5);
+    }
+
+    .background::before,
+    .background::after {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      content: '';
+    }
+
+    .background::before {
+      z-index: 1;
+      background: 0 / 4px url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2" stroke="black" stroke-linecap="square" stroke-width="0.5"><line x1="0" y1="1" x2="1" y2="0"/><line x1="1" y1="2" x2="2" y2="1"/></svg>');
+    }
+
+    .background::after {
+      z-index: 2;
+      background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.9));
+    }
+  </style>
 </head>
+
 <body>
   <svg class="logo" viewBox="0 0 472 450">
     <defs>
@@ -43,17 +213,102 @@
   </ul>
   <div class="background">
     <svg viewBox="0 0 100 100">
-      <path style="animation-delay:-0.8s" d="M69.4 28.7c-3-2.8-6.5-4.8-10.3-6-4.6-1.5-7.7-5.8-7.7-10.6V7.5c4.9.2 9.7 1.1 14.2 2.9 7.4 2.9 9.5 12.6 3.8 18.3z" />
-      <path style="animation-delay:-0.7s" d="M89 33c-1.9-4.4-4.6-8.5-8-12.1l-3.2 3.2c-3.4 3.4-4.2 8.6-2.1 12.9 1.8 3.6 2.8 7.5 3 11.6 8.1 0 13.5-8.2 10.3-15.6z" />
-      <path style="animation-delay:-0.6s" d="M89.6 65.6c1.8-4.5 2.7-9.3 2.9-14.2H88c-4.8 0-9.1 3.1-10.6 7.7-1.3 3.8-3.3 7.3-6.1 10.3 5.7 5.7 15.4 3.6 18.3-3.8z" />
-      <path style="animation-delay:-0.5s" d="M67 89c4.4-1.9 8.5-4.6 12.1-8l-3.2-3.2c-3.4-3.4-8.6-4.2-12.9-2.1-3.6 1.8-7.5 2.8-11.6 3 0 8.1 8.2 13.5 15.6 10.3z" />
-      <path style="animation-delay:-0.4s" d="M34.4 89.6c4.5 1.8 9.3 2.7 14.2 2.9V88c0-4.8-3.1-9.1-7.7-10.6-3.8-1.3-7.3-3.3-10.3-6.1-5.7 5.7-3.6 15.4 3.8 18.3z" />
-      <path style="animation-delay:-0.3s" d="M11 67c1.9 4.4 4.6 8.5 8 12.1l3.2-3.2c3.4-3.4 4.2-8.6 2.1-12.9-1.8-3.6-2.8-7.5-3-11.6-8.1 0-13.5 8.2-10.3 15.6z" />
-      <path style="animation-delay:-0.2s" d="M10.4 34.4c-1.8 4.5-2.7 9.3-2.9 14.2H12c4.8 0 9.1-3.1 10.6-7.7 1.3-3.8 3.3-7.3 6.1-10.3-5.7-5.7-15.4-3.6-18.3 3.8z" />
-      <path style="animation-delay:-0.1s" d="M33 11c-4.4 1.9-8.5 4.6-12.1 8l3.2 3.2c3.4 3.4 8.6 4.2 12.9 2.1 3.6-1.8 7.5-2.8 11.6-3 0-8.1-8.2-13.5-15.6-10.3z" />
+      <path style="animation-delay:-0.8s"
+        d="M69.4 28.7c-3-2.8-6.5-4.8-10.3-6-4.6-1.5-7.7-5.8-7.7-10.6V7.5c4.9.2 9.7 1.1 14.2 2.9 7.4 2.9 9.5 12.6 3.8 18.3z" />
+      <path style="animation-delay:-0.7s"
+        d="M89 33c-1.9-4.4-4.6-8.5-8-12.1l-3.2 3.2c-3.4 3.4-4.2 8.6-2.1 12.9 1.8 3.6 2.8 7.5 3 11.6 8.1 0 13.5-8.2 10.3-15.6z" />
+      <path style="animation-delay:-0.6s"
+        d="M89.6 65.6c1.8-4.5 2.7-9.3 2.9-14.2H88c-4.8 0-9.1 3.1-10.6 7.7-1.3 3.8-3.3 7.3-6.1 10.3 5.7 5.7 15.4 3.6 18.3-3.8z" />
+      <path style="animation-delay:-0.5s"
+        d="M67 89c4.4-1.9 8.5-4.6 12.1-8l-3.2-3.2c-3.4-3.4-8.6-4.2-12.9-2.1-3.6 1.8-7.5 2.8-11.6 3 0 8.1 8.2 13.5 15.6 10.3z" />
+      <path style="animation-delay:-0.4s"
+        d="M34.4 89.6c4.5 1.8 9.3 2.7 14.2 2.9V88c0-4.8-3.1-9.1-7.7-10.6-3.8-1.3-7.3-3.3-10.3-6.1-5.7 5.7-3.6 15.4 3.8 18.3z" />
+      <path style="animation-delay:-0.3s"
+        d="M11 67c1.9 4.4 4.6 8.5 8 12.1l3.2-3.2c3.4-3.4 4.2-8.6 2.1-12.9-1.8-3.6-2.8-7.5-3-11.6-8.1 0-13.5 8.2-10.3 15.6z" />
+      <path style="animation-delay:-0.2s"
+        d="M10.4 34.4c-1.8 4.5-2.7 9.3-2.9 14.2H12c4.8 0 9.1-3.1 10.6-7.7 1.3-3.8 3.3-7.3 6.1-10.3-5.7-5.7-15.4-3.6-18.3 3.8z" />
+      <path style="animation-delay:-0.1s"
+        d="M33 11c-4.4 1.9-8.5 4.6-12.1 8l3.2 3.2c3.4 3.4 8.6 4.2 12.9 2.1 3.6-1.8 7.5-2.8 11.6-3 0-8.1-8.2-13.5-15.6-10.3z" />
     </svg>
   </div>
-  <script src="app.js"></script>
   <script src="https://hm.baidu.com/hm.js?{{ site.analytics_id }}"></script>
+  <script>
+    // logo ------------------------------------------------------------------------
+
+    ; (() => {
+      const interval = 60 * 1000
+
+      const colors = [
+        ['#f8f9fa', '#f1f3f5', '#e9ecef', '#dee2e6', '#ced4da', '#adb5bd', '#868e96', '#495057', '#343a40', '#212529'], // Gray
+        ['#fff5f5', '#ffe3e3', '#ffc9c9', '#ffa8a8', '#ff8787', '#ff6b6b', '#fa5252', '#f03e3e', '#e03131', '#c92a2a'], // Red
+        ['#fff0f6', '#ffdeeb', '#fcc2d7', '#faa2c1', '#f783ac', '#f06595', '#e64980', '#d6336c', '#c2255c', '#a61e4d'], // Pink
+        ['#f8f0fc', '#f3d9fa', '#eebefa', '#e599f7', '#da77f2', '#cc5de8', '#be4bdb', '#ae3ec9', '#9c36b5', '#862e9c'], // Grape
+        ['#f3f0ff', '#e5dbff', '#d0bfff', '#b197fc', '#9775fa', '#845ef7', '#7950f2', '#7048e8', '#6741d9', '#5f3dc4'], // Violet
+        ['#edf2ff', '#dbe4ff', '#bac8ff', '#91a7ff', '#748ffc', '#5c7cfa', '#4c6ef5', '#4263eb', '#3b5bdb', '#364fc7'], // Indigo
+        ['#e7f5ff', '#d0ebff', '#a5d8ff', '#74c0fc', '#4dabf7', '#339af0', '#228be6', '#1c7ed6', '#1971c2', '#1864ab'], // Blue
+        ['#e3fafc', '#c5f6fa', '#99e9f2', '#66d9e8', '#3bc9db', '#22b8cf', '#15aabf', '#1098ad', '#0c8599', '#0b7285'], // Cyan
+        ['#e6fcf5', '#c3fae8', '#96f2d7', '#63e6be', '#38d9a9', '#20c997', '#12b886', '#0ca678', '#099268', '#087f5b'], // Teal
+        ['#ebfbee', '#d3f9d8', '#b2f2bb', '#8ce99a', '#69db7c', '#51cf66', '#40c057', '#37b24d', '#2f9e44', '#2b8a3e'], // Green
+        ['#f4fce3', '#e9fac8', '#d8f5a2', '#c0eb75', '#a9e34b', '#94d82d', '#82c91e', '#74b816', '#66a80f', '#5c940d'], // Lime
+        ['#fff9db', '#fff3bf', '#ffec99', '#ffe066', '#ffd43b', '#fcc419', '#fab005', '#f59f00', '#f08c00', '#e67700'], // Yellow
+        ['#fff4e6', '#ffe8cc', '#ffd8a8', '#ffc078', '#ffa94d', '#ff922b', '#fd7e14', '#f76707', '#e8590c', '#d9480f'] // Orange
+      ]
+
+      const logo = document.querySelector('.logo')
+      const color = logo.querySelector('g > path')
+
+      const typeLength = colors.length
+      const levelLength = colors[0].length
+
+      const setLogoColor = (type, level) => {
+        color.style.fill = colors[type][level]
+        console.log(
+          `%cOC- %c ${type} %c %c ${level} %c → %c  `,
+          `color: ${colors[0][7]}`,
+          `border-radius: 4px; background: ${colors[type][7]}`,
+          '',
+          `border-radius: 4px; background: ${colors[0][level]}`,
+          '',
+          `border-radius: 4px; background: ${colors[type][level]}`
+        )
+      }
+
+      setLogoColor(
+        ~~(Date.now() / interval) % typeLength,
+        ~~(Date.now() / (interval / levelLength)) % levelLength
+      )
+
+      logo.onclick = () => setLogoColor(
+        ~~(Math.random() * typeLength),
+        ~~(Math.random() * levelLength)
+      )
+    })()
+
+      // background ------------------------------------------------------------------
+
+      ; (() => {
+        const quality = 0.5
+
+        const width = window.innerWidth || document.documentElement.clientWidth
+        const height = window.innerHeight || document.documentElement.clientHeight
+
+        const url = `https://source.unsplash.com/random/${~~(width * quality)}x${~~(height * quality)}`
+
+        const background = document.querySelector('.background')
+        const svg = background.querySelector('svg')
+
+        const img = document.createElement('img')
+        img.alt = 'Unsplash Source'
+        background.appendChild(img)
+
+        window.fetch(url).then(res => res.blob()).then(blob => {
+          img.src = URL.createObjectURL(blob)
+          svg.remove()
+          // next tick
+          // setTimeout(() => svg.remove(), 0)
+        })
+      })()
+  </script>
 </body>
+
 </html>
