@@ -310,6 +310,17 @@
         // setTimeout(() => svg.remove(), 0)
       })
     })()
+
+    // mourning --------------------------------------------------------------------
+
+    ;(() => {
+      const date = new Date()
+      const m = date.getMonth() + 1
+      const d = date.getDate()
+      const mourning = ['44', '512'].includes(m + '' + d)
+      if (!mourning) return 
+      document.documentElement.style.filter = 'grayscale(100%)'
+    })()
   </script>
 </body>
 
