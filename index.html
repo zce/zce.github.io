@@ -290,12 +290,12 @@
 
       const img = document.createElement('img')
       img.alt = 'Unsplash Source'
+      img.addEventListener('load', () => URL.revokeObjectURL(img.src))
       background.appendChild(img)
 
       fetch(url).then(res => res.blob()).then(blob => {
         img.src = URL.createObjectURL(blob)
         svg.remove()
-        URL.revokeObjectURL(img.src)
       })
     })()
 
