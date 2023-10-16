@@ -1,7 +1,7 @@
----
+<!-- ---
 # zce’s homepage
 # jekyll frontmatter
----
+--- -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,9 +43,7 @@
       width: 12.5rem;
       height: 12.5rem;
       animation: fadeIn 1s both;
-    }
-
-    .logo path {
+      fill: #264653;
       transition: fill 0.3s;
     }
 
@@ -106,18 +104,14 @@
       justify-content: center;
       align-items: center;
       position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: -1;
+      inset: 0;
+      z-index: -10;
       overflow: hidden;
-      background-size: 0;
     }
 
     .background > svg {
-      width: 100px;
-      height: 100px;
+      width: 5rem;
+      height: 5rem;
     }
 
     .background > svg > path {
@@ -125,12 +119,15 @@
       animation: fade 0.8s steps(8) infinite;
     }
 
+    .background > img,
+    .background::before,
+    .background::after {
+      position: absolute;
+      inset: 0;
+      content: '';
+    }
+
     .background > img {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -142,16 +139,6 @@
       opacity: 0;
       filter: blur(5rem);
       transform: scale(1.5);
-    }
-
-    .background::before,
-    .background::after {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      content: '';
     }
 
     .background::before {
@@ -169,18 +156,9 @@
         opacity: 0;
         transform: translateY(100%) scale(0.4);
       }
-
-      to {
-        opacity: 1;
-        transform: none;
-      }
     }
 
     @keyframes fade {
-      from {
-        opacity: 1;
-      }
-
       to {
         opacity: 0;
       }
@@ -189,21 +167,13 @@
 </head>
 
 <body>
-  <svg class="logo" viewBox="0 0 472 450">
-    <defs>
-      <mask id="mask" fill="#fff">
-        <path d="M472 114.26L203.029 335.74H407.1L472 449.48H64.9L0 335.74l268.971-221.48H64.9L0 .52h407.1z" />
-      </mask>
-      <filter id="shadow" x="-12.7%" y="-13.4%" width="125.4%" height="126.7%" filterUnits="objectBoundingBox">
-        <feOffset in="SourceAlpha" result="offset-outer" />
-        <feGaussianBlur stdDeviation="20" in="offset-outer" result="blue-outer" />
-        <feComposite in="blue-outer" in2="SourceAlpha" operator="out" result="blue-outer" />
-        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" in="blue-outer" />
-      </filter>
-    </defs>
-    <g mask="url(#mask)">
-      <path d="M0 0h472v449H0z" fill="#339AF0" />
-      <path d="M0 335.74l64.9 113.74L472 114.26 407.1.52z" filter="url(#shadow)" />
+  <svg class="logo" viewBox="0 0 500 500">
+    <mask id="a"><path d="M275.497 150H62.541L19.5 25h415.99l43.041 125-255.989 200h212.939l43.041 125H62.55L19.509 350l255.988-200z"/></mask>
+    <filter id="b" x="-1" width="3"><feGaussianBlur stdDeviation="15"/></filter>
+    <g mask="url(#a)">
+      <path d="M0-0h500v500H0z"/>
+      <path d="M186.9-150h125v800h-125z" transform="rotate(52)" transform-origin="250 250" fill="#000" filter="url(#b)"/>
+      <path d="M186.9-150h125v800h-125z" transform="rotate(52)" transform-origin="250 250"/>
     </g>
   </svg>
   <h1 class="title">{{ site.heading }}</h1>
@@ -251,13 +221,12 @@
       ]
 
       const logo = document.querySelector('.logo')
-      const color = logo.querySelector('g > path')
 
       const types = colors.length
       const levels = colors[0].length
 
       const setLogoColor = (type, level) => {
-        color.style.fill = colors[type][level]
+        logo.style.fill = colors[type][level]
         console.log(
           `%cOC- %c ${type} %c %c ${level} %c → %c  `,
           `color: ${colors[0][7]}`,
