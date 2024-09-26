@@ -2,22 +2,28 @@
 # zce’s homepage
 # jekyll frontmatter
 ---
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="{{ site.description }}">
-  <meta name="keywords" content="{{ site.keywords | join: ', ' }}">
-  <meta name="theme-color" content="#454d5d">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{ site.description }}" />
+  <meta name="keywords" content="{{ site.keywords | join: ', ' }}" />
+  <meta name="theme-color" content="#454d5d" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>{{ site.title }}</title>
-  <link rel="preconnect" href="https://source.unsplash.com">
-  <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2&family=Frijole&family=Nothing+You+Could+Do&display=swap">
+  <link rel="preconnect" href="https://picsum.photos" />
+  <link rel="preconnect" href="https://fastly.picsum.photos" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2&family=Frijole&family=Nothing+You+Could+Do&display=swap" />
   <style>
+    /* @property --c {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #264653;
+    } */
+
     html,
     body {
       height: 100%;
@@ -43,8 +49,8 @@
       width: 12.5rem;
       height: 12.5rem;
       animation: fadeIn 1s both;
-      fill: #264653;
-      transition: fill 0.3s;
+      color: var(--c, #264653);
+      transition: color 0.3s;
     }
 
     .title {
@@ -143,7 +149,8 @@
 
     .background::before {
       z-index: 1;
-      background: 0 / 4px url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2" stroke="black" stroke-linecap="square" stroke-width="0.5"><line x1="0" y1="1" x2="1" y2="0"/><line x1="1" y1="2" x2="2" y2="1"/></svg>');
+      background: 0 / 4px
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2" stroke="black" stroke-linecap="square" stroke-width="0.5"><line x1="0" y1="1" x2="1" y2="0"/><line x1="1" y1="2" x2="2" y2="1"/></svg>');
     }
 
     .background::after {
@@ -167,13 +174,15 @@
 </head>
 
 <body>
-  <svg class="logo" viewBox="0 0 500 500">
-    <mask id="a"><path d="M275.497 150H62.541L19.5 25h415.99l43.041 125-255.989 200h212.939l43.041 125H62.55L19.509 350l255.988-200z"/></mask>
-    <filter id="b" x="-1" width="3"><feGaussianBlur stdDeviation="15"/></filter>
-    <g mask="url(#a)">
-      <path d="M0-0h500v500H0z"/>
-      <path d="M526.41-46l76.956 98.501-630.408 492.53L-104 446.529 526.41-46z" fill="#000" filter="url(#b)"/>
-      <path d="M526.41-46l76.956 98.501-630.408 492.53L-104 446.529 526.41-46z"/>
+  <svg class="logo" viewBox="0 0 800 800">
+    <mask id="shape" fill="#fff"><path d="M467.96 220H76.87L8 20h715.95l68.86 200-460.77 360h391.09L792 780H76.05L7.18 580l460.78-360z"/></mask>
+    <filter id="blur" x="-1" width="3"><feGaussianBlur stdDeviation="50"/></filter>
+    <g mask="url(#shape)">
+      <path d="M0 0h800v800H0z" fill="currentColor"/>
+      <g transform="rotate(52)" style="transform-origin: 400px">
+        <path d="M300-100h200V900H300z" filter="url(#blur)"/>
+        <path d="M300-100h200V900H300z" fill="color-mix(in srgb, currentColor 80%, #fff)"/>
+      </g>
     </g>
   </svg>
   <h1 class="title">{{ site.heading }}</h1>
@@ -187,14 +196,14 @@
   </ul>
   <div class="background">
     <svg viewBox="0 0 100 100">
-      <path style="animation-delay: -0.8s" d="M69.4 28.7c-3-2.8-6.5-4.8-10.3-6-4.6-1.5-7.7-5.8-7.7-10.6V7.5c4.9.2 9.7 1.1 14.2 2.9 7.4 2.9 9.5 12.6 3.8 18.3z"/>
-      <path style="animation-delay: -0.7s" d="M89 33c-1.9-4.4-4.6-8.5-8-12.1l-3.2 3.2c-3.4 3.4-4.2 8.6-2.1 12.9 1.8 3.6 2.8 7.5 3 11.6 8.1 0 13.5-8.2 10.3-15.6z"/>
-      <path style="animation-delay: -0.6s" d="M89.6 65.6c1.8-4.5 2.7-9.3 2.9-14.2H88c-4.8 0-9.1 3.1-10.6 7.7-1.3 3.8-3.3 7.3-6.1 10.3 5.7 5.7 15.4 3.6 18.3-3.8z"/>
-      <path style="animation-delay: -0.5s" d="M67 89c4.4-1.9 8.5-4.6 12.1-8l-3.2-3.2c-3.4-3.4-8.6-4.2-12.9-2.1-3.6 1.8-7.5 2.8-11.6 3 0 8.1 8.2 13.5 15.6 10.3z"/>
-      <path style="animation-delay: -0.4s" d="M34.4 89.6c4.5 1.8 9.3 2.7 14.2 2.9V88c0-4.8-3.1-9.1-7.7-10.6-3.8-1.3-7.3-3.3-10.3-6.1-5.7 5.7-3.6 15.4 3.8 18.3z"/>
-      <path style="animation-delay: -0.3s" d="M11 67c1.9 4.4 4.6 8.5 8 12.1l3.2-3.2c3.4-3.4 4.2-8.6 2.1-12.9-1.8-3.6-2.8-7.5-3-11.6-8.1 0-13.5 8.2-10.3 15.6z"/>
-      <path style="animation-delay: -0.2s" d="M10.4 34.4c-1.8 4.5-2.7 9.3-2.9 14.2H12c4.8 0 9.1-3.1 10.6-7.7 1.3-3.8 3.3-7.3 6.1-10.3-5.7-5.7-15.4-3.6-18.3 3.8z"/>
-      <path style="animation-delay: -0.1s" d="M33 11c-4.4 1.9-8.5 4.6-12.1 8l3.2 3.2c3.4 3.4 8.6 4.2 12.9 2.1 3.6-1.8 7.5-2.8 11.6-3 0-8.1-8.2-13.5-15.6-10.3z"/>
+      <path style="animation-delay: -0.8s" d="M69.4 28.7c-3-2.8-6.5-4.8-10.3-6-4.6-1.5-7.7-5.8-7.7-10.6V7.5c4.9.2 9.7 1.1 14.2 2.9 7.4 2.9 9.5 12.6 3.8 18.3z" />
+      <path style="animation-delay: -0.7s" d="M89 33c-1.9-4.4-4.6-8.5-8-12.1l-3.2 3.2c-3.4 3.4-4.2 8.6-2.1 12.9 1.8 3.6 2.8 7.5 3 11.6 8.1 0 13.5-8.2 10.3-15.6z" />
+      <path style="animation-delay: -0.6s" d="M89.6 65.6c1.8-4.5 2.7-9.3 2.9-14.2H88c-4.8 0-9.1 3.1-10.6 7.7-1.3 3.8-3.3 7.3-6.1 10.3 5.7 5.7 15.4 3.6 18.3-3.8z" />
+      <path style="animation-delay: -0.5s" d="M67 89c4.4-1.9 8.5-4.6 12.1-8l-3.2-3.2c-3.4-3.4-8.6-4.2-12.9-2.1-3.6 1.8-7.5 2.8-11.6 3 0 8.1 8.2 13.5 15.6 10.3z" />
+      <path style="animation-delay: -0.4s" d="M34.4 89.6c4.5 1.8 9.3 2.7 14.2 2.9V88c0-4.8-3.1-9.1-7.7-10.6-3.8-1.3-7.3-3.3-10.3-6.1-5.7 5.7-3.6 15.4 3.8 18.3z" />
+      <path style="animation-delay: -0.3s" d="M11 67c1.9 4.4 4.6 8.5 8 12.1l3.2-3.2c3.4-3.4 4.2-8.6 2.1-12.9-1.8-3.6-2.8-7.5-3-11.6-8.1 0-13.5 8.2-10.3 15.6z" />
+      <path style="animation-delay: -0.2s" d="M10.4 34.4c-1.8 4.5-2.7 9.3-2.9 14.2H12c4.8 0 9.1-3.1 10.6-7.7 1.3-3.8 3.3-7.3 6.1-10.3-5.7-5.7-15.4-3.6-18.3 3.8z" />
+      <path style="animation-delay: -0.1s" d="M33 11c-4.4 1.9-8.5 4.6-12.1 8l3.2 3.2c3.4 3.4 8.6 4.2 12.9 2.1 3.6-1.8 7.5-2.8 11.6-3 0-8.1-8.2-13.5-15.6-10.3z" />
     </svg>
   </div>
   <script src="https://hm.baidu.com/hm.js?{{ site.analytics_id }}"></script>
@@ -226,7 +235,7 @@
       const levels = colors[0].length
 
       const setLogoColor = (type, level) => {
-        logo.style.fill = colors[type][level]
+        logo.style.setProperty('--c', colors[type][level]);
         console.log(
           `%cOC- %c ${type} %c %c ${level} %c → %c  `,
           `color: ${colors[0][7]}`,
@@ -245,14 +254,13 @@
     })()
 
     // background ------------------------------------------------------------------
-
     ;(() => {
       const quality = 0.5
 
       const width = window.innerWidth || document.documentElement.clientWidth
       const height = window.innerHeight || document.documentElement.clientHeight
 
-      const url = `https://source.unsplash.com/random/${~~(width * quality)}x${~~(height * quality)}`
+      const url = `https://picsum.photos/${~~(width * quality)}/${~~(height * quality)}`
 
       const background = document.querySelector('.background')
       const svg = background.querySelector('svg')
@@ -262,14 +270,15 @@
       img.addEventListener('load', () => URL.revokeObjectURL(img.src))
       background.appendChild(img)
 
-      fetch(url).then(res => res.blob()).then(blob => {
-        img.src = URL.createObjectURL(blob)
-        svg.remove()
-      })
+      fetch(url)
+        .then(res => res.blob())
+        .then(blob => {
+          img.src = URL.createObjectURL(blob)
+          svg.remove()
+        })
     })()
 
     // mourning --------------------------------------------------------------------
-
     ;(() => {
       const isMourning = (date = new Date()) => {
         const isLeap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0
@@ -290,5 +299,4 @@
     })()
   </script>
 </body>
-
 </html>
