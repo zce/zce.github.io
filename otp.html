@@ -1005,7 +1005,7 @@
       // No network requests, dependencies, service worker, or external resources.
       // Keep the original vault schema for compatibility with earlier versions.
       const $ = (id) => document.getElementById(id)
-      const STORE = 'otp-desk.v1'
+      const STORE = 'zce-otp'
       const AUTO_LOCK = 10 * 60 * 1000
       const encoder = new TextEncoder()
       const decoder = new TextDecoder()
@@ -1463,7 +1463,7 @@
             salt = result.salt
             accounts = result.accounts
           } else {
-            if (password.length < 8) throw Error('Use at least 8 characters')
+            if (password.length < 6) throw Error('Use at least 6 characters')
             if (password !== $('confirmPassword').value) throw Error('Passwords do not match')
             const newSalt = random(16)
             const newKey = await derive(password, newSalt)
