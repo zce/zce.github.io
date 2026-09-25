@@ -1,0 +1,1724 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>OTP</title>
+    <style>
+      :root {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        font-synthesis: none;
+        color-scheme: light;
+        --bg: #fafaf8;
+        --surface: #fff;
+        --surface-alt: #f5f6f3;
+        --text: #222923;
+        --secondary: #677168;
+        --muted: #8d968e;
+        --line: #e5e9e3;
+        --accent: #375b47;
+        --accent-text: #fff;
+        --accent-soft: #eaf1eb;
+        --danger: #b24f4b;
+        --focus: #86af90;
+        --track: #d5e1d8;
+        --shadow: 0 22px 75px #1724191b;
+        --scrim: #1a281c66;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --bg: #121813;
+          --surface: #1b241d;
+          --surface-alt: #202b23;
+          --text: #eaf0e9;
+          --secondary: #b3c2b5;
+          --muted: #829585;
+          --line: #304133;
+          --accent: #a4d3ae;
+          --accent-text: #17271a;
+          --accent-soft: #2d4434;
+          --danger: #f0a199;
+          --focus: #9ed2a8;
+          --track: #425548;
+          --shadow: 0 22px 75px #0008;
+          --scrim: #060c08c0;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        min-width: 260px;
+        min-height: 100dvh;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.48;
+      }
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.48;
+        cursor: not-allowed;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 3px;
+      }
+      button svg {
+        pointer-events: none;
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        display: block;
+        flex: none;
+      }
+      .container {
+        width: min(100% - 48px, 666px);
+        margin: 0 auto;
+      }
+      .topbar {
+        height: 81px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .brand {
+        font-size: 18px;
+        font-weight: 790;
+        letter-spacing: -0.85px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+      }
+      .symbol {
+        width: 27px;
+        height: 27px;
+        border-radius: 9px;
+        background: var(--accent);
+        color: var(--accent-text);
+        display: grid;
+        place-items: center;
+        font-size: 19px;
+        font-weight: 350;
+        line-height: 1;
+      }
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .icon-button {
+        display: grid;
+        place-items: center;
+        background: transparent;
+        color: var(--secondary);
+        border: 0;
+        border-radius: 9px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+      }
+      .icon-button:hover {
+        background: var(--surface-alt);
+        color: var(--text);
+      }
+      .menu {
+        position: relative;
+      }
+      .menu > summary {
+        list-style: none;
+      }
+      .menu > summary::-webkit-details-marker {
+        display: none;
+      }
+      .menu-panel {
+        position: absolute;
+        right: 0;
+        top: 45px;
+        z-index: 12;
+        width: 212px;
+        padding: 7px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+      .menu-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 11px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text);
+        text-align: left;
+        font-size: 12px;
+      }
+      .menu-item:hover {
+        background: var(--surface-alt);
+      }
+      .menu-item .hint {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .menu-divider {
+        height: 1px;
+        background: var(--line);
+        margin: 6px 4px;
+      }
+      main {
+        padding-top: 49px;
+        padding-bottom: 48px;
+      }
+      .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 24px;
+      }
+      h1 {
+        font-size: 29px;
+        font-weight: 735;
+        line-height: 1.2;
+        margin: 0;
+        letter-spacing: -1.2px;
+      }
+      .subtext {
+        margin: 7px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .button {
+        min-height: 40px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        background: var(--accent);
+        color: var(--accent-text);
+        font-size: 12px;
+        font-weight: 700;
+        padding: 10px 15px;
+        white-space: nowrap;
+      }
+      .button:hover:not(:disabled) {
+        filter: brightness(0.96);
+      }
+      .button.secondary {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--line);
+      }
+      .button.secondary:hover {
+        background: var(--surface-alt);
+        filter: none;
+      }
+      .button.danger {
+        background: var(--danger);
+        color: var(--surface);
+      }
+      .button svg {
+        width: 15px;
+        height: 15px;
+      }
+      .search {
+        background: var(--surface);
+        height: 46px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+      }
+      .search:focus-within {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+      .search svg {
+        width: 16px;
+        height: 16px;
+        color: var(--muted);
+      }
+      .search input {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: 0;
+        outline: none;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .search input::placeholder,
+      .field::placeholder {
+        color: var(--muted);
+      }
+      .shortcut {
+        font:
+          500 10px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
+          monospace;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        padding: 2px 6px;
+        line-height: 1.4;
+        border-radius: 5px;
+        white-space: nowrap;
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 21px 2px 10px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .rows {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 13px;
+        overflow: visible;
+      }
+      .account + .account {
+        border-top: 1px solid var(--line);
+      }
+      .account {
+        position: relative;
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr) auto 30px;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 13px 12px 15px;
+        min-height: 75px;
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: var(--surface-alt);
+        color: var(--accent);
+        font-weight: 750;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+      }
+      .identity {
+        min-width: 0;
+      }
+      .issuer {
+        font-size: 13px;
+        font-weight: 705;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .account-name {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .code-button {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 7px;
+        text-align: right;
+        border: 0;
+        border-radius: 8px;
+        color: var(--text);
+        background: transparent;
+        padding: 5px 7px;
+        min-width: 120px;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      .code-button:hover {
+        background: var(--surface-alt);
+      }
+      .code-button.copied .code {
+        color: var(--accent);
+      }
+      .code {
+        font:
+          680 22px/1.15 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
+          monospace;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .timer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        align-items: center;
+        color: var(--secondary);
+        font:
+          500 10px/1 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
+          monospace;
+        font-variant-numeric: tabular-nums;
+      }
+      .seconds {
+        min-width: 24px;
+        text-align: right;
+      }
+      .seconds.warning {
+        color: var(--danger);
+      }
+      .progress-track {
+        display: block;
+        width: 68px;
+        height: 4px;
+        overflow: hidden;
+        border-radius: 100px;
+        background: var(--track);
+      }
+      .progress-fill {
+        display: block;
+        height: 100%;
+        width: 100%;
+        border-radius: inherit;
+        background: var(--accent);
+        transition:
+          width 0.25s linear,
+          background-color 0.25s;
+      }
+      .row-menu {
+        position: relative;
+      }
+      .row-menu[open] {
+        z-index: 7;
+      }
+      .row-menu > summary {
+        list-style: none;
+        width: 30px;
+        height: 32px;
+      }
+      .row-menu > summary::-webkit-details-marker {
+        display: none;
+      }
+      .row-menu[open] > summary {
+        background: var(--surface-alt);
+      }
+      .row-actions {
+        position: absolute;
+        right: 0;
+        top: 36px;
+        z-index: 5;
+        width: 176px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        border-radius: 10px;
+        padding: 5px;
+      }
+      .row-actions button {
+        width: 100%;
+        background: transparent;
+        border: 0;
+        text-align: left;
+        border-radius: 7px;
+        padding: 10px;
+        color: var(--secondary);
+        font-size: 12px;
+      }
+      .row-actions button:hover {
+        color: var(--text);
+        background: var(--surface-alt);
+      }
+      .row-actions .remove-action:hover {
+        color: var(--danger);
+      }
+      .empty {
+        border: 1px dashed var(--line);
+        background: var(--surface);
+        border-radius: 14px;
+        text-align: center;
+        padding: 57px 18px;
+      }
+      .empty .empty-symbol {
+        font-size: 24px;
+        color: var(--accent);
+        margin-bottom: 9px;
+      }
+      .empty h2 {
+        font-size: 15px;
+        margin: 0;
+        font-weight: 680;
+      }
+      .empty p {
+        color: var(--muted);
+        font-size: 12px;
+        margin: 7px auto 20px;
+        max-width: 285px;
+      }
+      footer {
+        margin-top: 36px;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+        font-size: 11px;
+        line-height: 1.75;
+        color: var(--muted);
+      }
+      .gate {
+        width: min(100%, 410px);
+        margin: 9px auto 0;
+        padding: 30px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 17px;
+      }
+      .gate-icon {
+        width: 39px;
+        height: 39px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 22px;
+      }
+      .gate h1 {
+        font-size: 23px;
+        letter-spacing: -0.9px;
+      }
+      .gate .subtext {
+        font-size: 12px;
+        line-height: 1.65;
+        margin: 10px 0 25px;
+      }
+      .field {
+        display: block;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 13px;
+        padding: 12px 13px;
+        min-width: 0;
+        outline: 0;
+      }
+      .field:focus {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+      .gate .field + .field {
+        margin-top: 11px;
+      }
+      .gate .button {
+        width: 100%;
+        margin-top: 16px;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.65;
+        margin-top: 18px;
+      }
+      .error {
+        color: var(--danger);
+        font-size: 12px;
+        min-height: 0;
+        margin-top: 10px;
+      }
+      .error:empty {
+        display: none;
+      }
+      dialog {
+        width: min(470px, calc(100% - 28px));
+        max-height: min(92dvh, 780px);
+        padding: 0;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: auto;
+      }
+      dialog::backdrop {
+        background: var(--scrim);
+        backdrop-filter: blur(2px);
+      }
+      .modal {
+        padding: 25px;
+      }
+      .modal-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .modal h2 {
+        font-size: 19px;
+        font-weight: 725;
+        letter-spacing: -0.6px;
+        margin: 0;
+      }
+      .modal .subtext {
+        line-height: 1.6;
+        margin: 7px 0 23px;
+      }
+      .field-label {
+        font-size: 12px;
+        font-weight: 660;
+        display: block;
+        margin: 0 0 9px;
+      }
+      textarea.field {
+        font:
+          12px/1.7 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
+          monospace;
+        resize: vertical;
+        min-height: 140px;
+        max-height: 270px;
+        overflow-wrap: anywhere;
+      }
+      .subtle {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .preview {
+        padding: 10px 12px;
+        background: var(--surface-alt);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        margin-top: 12px;
+        max-height: 165px;
+        overflow: auto;
+      }
+      .preview-head {
+        font-size: 11px;
+        color: var(--secondary);
+        font-weight: 675;
+        margin-bottom: 4px;
+      }
+      .preview-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 7px 0;
+        font-size: 11px;
+        border-top: 1px solid var(--line);
+      }
+      .preview-row .preview-issuer {
+        min-width: 0;
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .preview-row .preview-account {
+        color: var(--muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: right;
+      }
+      .replace {
+        display: flex;
+        align-items: start;
+        gap: 9px;
+        color: var(--secondary);
+        font-size: 12px;
+        margin-top: 15px;
+      }
+      .replace input {
+        accent-color: var(--accent);
+        margin: 3px 0 0;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 23px;
+      }
+      .modal-actions .button {
+        padding-inline: 15px;
+      }
+      #toast {
+        position: fixed;
+        z-index: 25;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text);
+        color: var(--surface);
+        border-radius: 9px;
+        padding: 10px 15px;
+        box-shadow: var(--shadow);
+        max-width: min(440px, calc(100% - 32px));
+        text-align: center;
+        font-size: 12px;
+      }
+      #toast.bad {
+        background: var(--danger);
+        color: white;
+      }
+      @media (max-width: 470px) {
+        .container {
+          width: min(100% - 32px, 666px);
+        }
+        .topbar {
+          height: 65px;
+        }
+        main {
+          padding-top: 29px;
+        }
+        h1 {
+          font-size: 25px;
+        }
+        .heading {
+          margin-bottom: 19px;
+        }
+        .heading .button {
+          padding: 9px 11px;
+        }
+        .account {
+          grid-template-columns: minmax(0, 1fr) auto 27px;
+          gap: 8px;
+          padding: 11px 10px 11px 13px;
+          min-height: 70px;
+        }
+        .avatar {
+          display: none;
+        }
+        .issuer {
+          font-size: 12px;
+        }
+        .account-name {
+          font-size: 10px;
+        }
+        .code-button {
+          padding: 5px 3px;
+          min-width: 105px;
+        }
+        .progress-track {
+          width: 62px;
+        }
+        .code {
+          font-size: 20px;
+        }
+        .row-menu > summary {
+          width: 27px;
+        }
+        .meta {
+          margin-top: 16px;
+        }
+        .gate {
+          padding: 24px 20px;
+        }
+        .modal {
+          padding: 21px;
+        }
+      }
+      @media (max-width: 310px) {
+        .container {
+          width: calc(100% - 22px);
+        }
+        .heading {
+          align-items: start;
+        }
+        .heading .button {
+          font-size: 11px;
+        }
+        .account {
+          grid-template-columns: minmax(0, 1fr) 27px;
+          column-gap: 9px;
+          row-gap: 2px;
+          padding: 11px 12px;
+        }
+        .identity {
+          grid-column: 1;
+          grid-row: 1;
+        }
+        .code-button {
+          grid-column: 1;
+          grid-row: 2;
+          align-items: flex-start;
+          text-align: left;
+          min-width: 0;
+          width: max-content;
+          margin-left: -3px;
+        }
+        .timer {
+          justify-content: flex-start;
+        }
+        .row-menu {
+          grid-column: 2;
+          grid-row: 1 / span 2;
+          align-self: start;
+        }
+        .meta span:last-child {
+          display: none;
+        }
+        .shortcut {
+          display: none;
+        }
+        .modal {
+          padding: 16px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <div class="brand"><span class="symbol" aria-hidden="true">✳</span> OTP</div>
+        <div class="top-actions">
+          <button class="icon-button" type="button" id="lockButton" aria-label="Lock" title="Lock now" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="10" width="14" height="11" rx="2" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            </svg>
+          </button>
+          <details class="menu" id="menu">
+            <summary class="icon-button" aria-label="More options" title="More options">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="5" cy="12" r="1.7" />
+                <circle cx="12" cy="12" r="1.7" />
+                <circle cx="19" cy="12" r="1.7" />
+              </svg>
+            </summary>
+            <div class="menu-panel">
+              <button type="button" class="menu-item" id="exportButton" hidden>Export encrypted backup</button>
+              <button type="button" class="menu-item" id="restoreButton">Restore backup</button>
+              <div class="menu-divider"></div>
+              <div class="menu-item" style="color: var(--muted); pointer-events: none">Auto-lock · 10 minutes</div>
+            </div>
+          </details>
+        </div>
+      </header>
+
+      <main>
+        <section class="gate" id="gate">
+          <div class="gate-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="10" width="14" height="11" rx="2" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            </svg>
+          </div>
+          <h1 id="gateTitle">Create your vault</h1>
+          <p class="subtext" id="gateDescription">Your imported TOTP links are encrypted and stored in this browser.</p>
+          <form id="vaultForm">
+            <input class="field" id="password" type="password" placeholder="Vault password" aria-label="Vault password" autocomplete="off" required />
+            <input
+              class="field"
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm password"
+              aria-label="Confirm password"
+              autocomplete="off"
+              required
+            />
+            <div class="error" id="vaultError" role="alert"></div>
+            <button type="submit" class="button" id="vaultSubmit">Create vault</button>
+          </form>
+          <p class="note">Keep your phone authenticator. Your vault password cannot be recovered.</p>
+        </section>
+
+        <section id="workspace" hidden>
+          <div class="heading">
+            <div>
+              <h1>Accounts</h1>
+              <p class="subtext">Your codes, one click away.</p>
+            </div>
+            <button type="button" class="button" id="importButton">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg> Import
+            </button>
+          </div>
+          <label class="search" for="search"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m16.5 16.5 4 4" /></svg
+            ><input id="search" type="search" placeholder="Search accounts" autocomplete="off" aria-label="Search accounts" /><span
+              class="shortcut"
+              id="searchShortcut"
+              >Ctrl K</span
+            ></label
+          >
+          <div class="meta"><span id="count">0 accounts</span><span>Click a code to copy</span></div>
+          <div class="rows" id="rows"></div>
+          <div class="empty" id="empty" hidden>
+            <div class="empty-symbol" aria-hidden="true">✳</div>
+            <h2 id="emptyTitle">No accounts yet</h2>
+            <p id="emptyDescription">Create accounts on your phone, then import their TOTP links here.</p>
+            <button type="button" class="button" id="emptyImport">Import links</button>
+          </div>
+        </section>
+        <footer>
+          Offline · Encrypted in this browser · Keep your phone as the source of truth.<br />Codes depend on your device clock. Export a backup before clearing
+          browser data.
+        </footer>
+      </main>
+    </div>
+
+    <dialog id="importDialog" aria-labelledby="importTitle">
+      <div class="modal">
+        <div class="modal-head">
+          <h2 id="importTitle">Import TOTP links</h2>
+          <button type="button" class="icon-button" data-close="importDialog" aria-label="Close">×</button>
+        </div>
+        <p class="subtext">Paste links exported from your phone. One <code>otpauth://totp/</code> link per line.</p>
+        <form id="importForm">
+          <label class="field-label" for="links">TOTP links</label>
+          <textarea
+            class="field"
+            id="links"
+            spellcheck="false"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="off"
+            placeholder="otpauth://totp/Example:you@example.com?secret=...&amp;issuer=Example"
+            aria-describedby="linksHelp"
+          ></textarea>
+          <p class="subtle" id="linksHelp">Keys never leave this page. Paste multiple links to import together.</p>
+          <div class="preview" id="preview" hidden>
+            <div class="preview-head" id="previewHead"></div>
+            <div id="previewItems"></div>
+          </div>
+          <label class="replace" id="replaceLabel" hidden
+            ><input type="checkbox" id="replaceCheck" /><span id="replaceText">Replace existing account keys</span></label
+          >
+          <div class="error" id="importError" role="alert"></div>
+          <div class="modal-actions">
+            <button type="button" class="button secondary" data-close="importDialog">Cancel</button
+            ><button type="submit" class="button" id="importSubmit" disabled>Import</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <dialog id="renameDialog" aria-labelledby="renameTitle">
+      <div class="modal">
+        <div class="modal-head">
+          <h2 id="renameTitle">Rename account</h2>
+          <button type="button" class="icon-button" data-close="renameDialog" aria-label="Close">×</button>
+        </div>
+        <p class="subtext" id="renameContext"></p>
+        <form id="renameForm">
+          <label class="field-label" for="renameName">Display name</label>
+          <input class="field" id="renameName" type="text" maxlength="80" autocomplete="off" required />
+          <p class="subtle">Only the name shown here changes. Your imported link and key stay the same.</p>
+          <div class="error" id="renameError" role="alert"></div>
+          <div class="modal-actions">
+            <button type="button" class="button secondary" data-close="renameDialog">Cancel</button
+            ><button type="submit" class="button" id="renameSubmit">Save</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <dialog id="removeDialog" aria-labelledby="removeTitle">
+      <div class="modal">
+        <div class="modal-head">
+          <h2 id="removeTitle">Remove this account?</h2>
+          <button type="button" class="icon-button" data-close="removeDialog" aria-label="Close">×</button>
+        </div>
+        <p class="subtext" id="removeDescription">Only the local copy will be removed. Your phone authenticator is unchanged.</p>
+        <div class="error" id="removeError" role="alert"></div>
+        <div class="modal-actions">
+          <button type="button" class="button secondary" data-close="removeDialog">Cancel</button
+          ><button type="button" class="button danger" id="confirmRemove">Remove locally</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="restoreDialog" aria-labelledby="restoreTitle">
+      <div class="modal">
+        <div class="modal-head">
+          <h2 id="restoreTitle">Restore backup</h2>
+          <button type="button" class="icon-button" data-close="restoreDialog" aria-label="Close">×</button>
+        </div>
+        <p class="subtext" id="restoreDescription">Enter the password used to encrypt this backup.</p>
+        <form id="restoreForm">
+          <label class="field-label" for="restorePassword">Backup password</label
+          ><input class="field" type="password" autocomplete="off" id="restorePassword" required />
+          <div class="error" id="restoreError" role="alert"></div>
+          <div class="modal-actions">
+            <button type="button" class="button secondary" data-close="restoreDialog">Cancel</button
+            ><button type="submit" class="button" id="restoreSubmit">Verify backup</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+    <input id="backupFile" type="file" accept=".json,application/json" hidden />
+    <div role="status" id="toast" hidden></div>
+
+    <script>
+      'use strict'
+      // No network requests, dependencies, service worker, or external resources.
+      // Keep the original vault schema for compatibility with earlier versions.
+      const $ = (id) => document.getElementById(id)
+      const STORE = 'zce-otp'
+      const AUTO_LOCK = 10 * 60 * 1000
+      const encoder = new TextEncoder()
+      const decoder = new TextDecoder()
+      const hmacKeys = new Map()
+      const codeCache = new Map()
+      let key = null,
+        salt = null,
+        accounts = [],
+        loadedBlob = null
+      let epoch = 0,
+        lastActivity = 0,
+        ticking = false
+      let previewEntries = [],
+        previewUpdates = []
+      let removeId = null,
+        renameId = null,
+        pendingBackup = null,
+        verifiedBackup = null
+
+      const b64 = (bytes) => {
+        let text = ''
+        for (let i = 0; i < bytes.length; i += 8192) text += String.fromCharCode(...bytes.subarray(i, i + 8192))
+        return btoa(text)
+      }
+      const unb64 = (text) => Uint8Array.from(atob(text), (c) => c.charCodeAt(0))
+      const random = (n) => crypto.getRandomValues(new Uint8Array(n))
+      const storage = () => localStorage.getItem(STORE)
+      const normalize = (text) => String(text).trim().toLocaleLowerCase()
+      const accountKey = (a) => normalize(a.issuer) + '\0' + normalize(a.name)
+      const sameCredential = (a, b) => a.secret === b.secret && a.algorithm === b.algorithm && a.digits === b.digits && a.period === b.period
+      function notify(message, bad = false) {
+        const t = $('toast')
+        t.textContent = message
+        t.classList.toggle('bad', bad)
+        t.hidden = false
+        clearTimeout(notify.timer)
+        notify.timer = setTimeout(() => (t.hidden = true), 3000)
+      }
+      function cleanBase32(value) {
+        return value.toUpperCase().replace(/[\s-]/g, '').replace(/=+$/, '')
+      }
+      function decodeBase32(value) {
+        const secret = cleanBase32(value)
+        if (!secret || secret.length > 1024 || /[^A-Z2-7]/.test(secret)) throw Error('Invalid TOTP secret')
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
+        let buffer = 0,
+          bits = 0,
+          output = []
+        for (const letter of secret) {
+          buffer = (buffer << 5) | alphabet.indexOf(letter)
+          bits += 5
+          if (bits >= 8) {
+            bits -= 8
+            output.push((buffer >>> bits) & 255)
+          }
+          buffer &= (1 << bits) - 1
+        }
+        if (output.length < 1) throw Error('Invalid TOTP secret')
+        return new Uint8Array(output)
+      }
+      function parseURI(text) {
+        let url
+        try {
+          url = new URL(text.trim())
+        } catch {
+          throw Error('Invalid TOTP link')
+        }
+        if (url.protocol !== 'otpauth:' || url.hostname.toLowerCase() !== 'totp') throw Error('Only standard otpauth://totp/ links are supported')
+        let label
+        try {
+          label = decodeURIComponent(url.pathname.slice(1))
+        } catch {
+          throw Error('Invalid account label')
+        }
+        if (!label || label.length > 500) throw Error('Missing or oversized account label')
+        const colon = label.indexOf(':')
+        const prefix = colon < 0 ? '' : label.slice(0, colon).trim()
+        const name = (colon < 0 ? label : label.slice(colon + 1)).trim()
+        const issuer = (url.searchParams.get('issuer') || prefix || 'OTP').trim()
+        const secret = cleanBase32(url.searchParams.get('secret') || '')
+        decodeBase32(secret)
+        const algorithm = (url.searchParams.get('algorithm') || 'SHA1').toUpperCase().replace(/-/g, '')
+        const digits = Number(url.searchParams.get('digits') || 6)
+        const period = Number(url.searchParams.get('period') || 30)
+        if (!['SHA1', 'SHA256', 'SHA512'].includes(algorithm) || ![6, 8].includes(digits) || !Number.isInteger(period) || period < 15 || period > 120)
+          throw Error('Unsupported TOTP parameters')
+        if (issuer.length > 80 || name.length > 120) throw Error('Account name is too long')
+        return { id: b64(random(12)), issuer, name: name || issuer, secret, algorithm, digits, period }
+      }
+      async function derive(password, randomSalt) {
+        const material = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey'])
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: randomSalt, iterations: 310000, hash: 'SHA-256' },
+          material,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt', 'decrypt'],
+        )
+      }
+      async function seal(items, cipherKey, randomSalt) {
+        const iv = random(12)
+        const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cipherKey, encoder.encode(JSON.stringify(items)))
+        return JSON.stringify({ version: 1, salt: b64(randomSalt), iv: b64(iv), data: b64(new Uint8Array(encrypted)) })
+      }
+      function validateRecord(blob) {
+        const data = JSON.parse(blob)
+        if (data.version !== 1 || !['salt', 'iv', 'data'].every((k) => typeof data[k] === 'string' && /^[A-Za-z0-9+/=]+$/.test(data[k])))
+          throw Error('Unsupported or invalid encrypted backup')
+        if (unb64(data.salt).length !== 16 || unb64(data.iv).length !== 12 || data.data.length > 2_000_000) throw Error('Invalid backup data')
+        return data
+      }
+      async function openVault(password, blob) {
+        const record = validateRecord(blob)
+        const nextSalt = unb64(record.salt)
+        const nextKey = await derive(password, nextSalt)
+        const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(record.iv) }, nextKey, unb64(record.data))
+        const items = JSON.parse(decoder.decode(plaintext))
+        if (
+          !Array.isArray(items) ||
+          items.length > 5000 ||
+          !items.every(
+            (a) =>
+              a &&
+              typeof a.id === 'string' &&
+              a.id.length < 150 &&
+              typeof a.issuer === 'string' &&
+              a.issuer.length <= 80 &&
+              typeof a.name === 'string' &&
+              a.name.length <= 120 &&
+              (a.displayName === undefined || (typeof a.displayName === 'string' && a.displayName.length <= 80)) &&
+              typeof a.secret === 'string' &&
+              a.secret.length <= 1024 &&
+              ['SHA1', 'SHA256', 'SHA512'].includes(a.algorithm) &&
+              [6, 8].includes(a.digits) &&
+              Number.isInteger(a.period) &&
+              a.period >= 15 &&
+              a.period <= 120,
+          )
+        )
+          throw Error('Invalid vault contents')
+        return { key: nextKey, salt: nextSalt, accounts: items }
+      }
+      async function save(items) {
+        if (!key) throw Error('Vault is locked')
+        if (storage() !== loadedBlob) throw Error('Vault changed in another tab. Lock and unlock to reload.')
+        const blob = await seal(items, key, salt)
+        localStorage.setItem(STORE, blob)
+        loadedBlob = blob
+        accounts = items
+        epoch++
+        hmacKeys.clear()
+        codeCache.clear()
+        render()
+      }
+      function lock() {
+        epoch++
+        key = null
+        salt = null
+        accounts = []
+        hmacKeys.clear()
+        codeCache.clear()
+        lastActivity = 0
+        previewEntries = []
+        previewUpdates = []
+        verifiedBackup = null
+        for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close()
+        $('rows').replaceChildren()
+        $('search').value = ''
+        $('links').value = ''
+        $('password').value = ''
+        $('workspace').hidden = true
+        $('gate').hidden = false
+        $('lockButton').hidden = true
+        $('exportButton').hidden = true
+        const existing = Boolean(loadedBlob)
+        $('gateTitle').textContent = existing ? 'Welcome back' : 'Create your vault'
+        $('gateDescription').textContent = existing ? 'Unlock to view your codes.' : 'Your imported TOTP links are encrypted and stored in this browser.'
+        $('confirmPassword').hidden = existing
+        $('confirmPassword').required = !existing
+        $('confirmPassword').value = ''
+        $('vaultSubmit').textContent = existing ? 'Unlock' : 'Create vault'
+        $('vaultError').textContent = ''
+        $('menu').open = false
+      }
+      function unlockUI() {
+        $('gate').hidden = true
+        $('workspace').hidden = false
+        $('lockButton').hidden = false
+        $('exportButton').hidden = false
+        $('password').value = ''
+        $('confirmPassword').value = ''
+        lastActivity = Date.now()
+        epoch++
+        render()
+      }
+      function rememberActivity() {
+        if (key) lastActivity = Date.now()
+      }
+      async function generateCode(entry, step, version) {
+        if (!key) throw Error('Vault is locked')
+        let hmacKey = hmacKeys.get(entry.id)
+        if (!hmacKey) {
+          hmacKey = await crypto.subtle.importKey(
+            'raw',
+            decodeBase32(entry.secret),
+            { name: 'HMAC', hash: { SHA1: 'SHA-1', SHA256: 'SHA-256', SHA512: 'SHA-512' }[entry.algorithm] },
+            false,
+            ['sign'],
+          )
+          if (version !== epoch || !key) throw Error('Vault is locked')
+          hmacKeys.set(entry.id, hmacKey)
+        }
+        const buffer = new ArrayBuffer(8)
+        const count = new DataView(buffer)
+        count.setUint32(0, Math.floor(step / 4294967296))
+        count.setUint32(4, step >>> 0)
+        const digest = new Uint8Array(await crypto.subtle.sign('HMAC', hmacKey, buffer))
+        if (version !== epoch || !key) throw Error('Vault is locked')
+        const offset = digest[digest.length - 1] & 15
+        const binary = ((digest[offset] & 127) << 24) | (digest[offset + 1] << 16) | (digest[offset + 2] << 8) | digest[offset + 3]
+        return String(binary % 10 ** entry.digits).padStart(entry.digits, '0')
+      }
+      function grouped(code) {
+        return code.slice(0, code.length / 2) + ' ' + code.slice(code.length / 2)
+      }
+      async function copyCode(entry, button) {
+        if (!key) return
+        rememberActivity()
+        const version = epoch
+        let step = Math.floor(Date.now() / 1000 / entry.period)
+        try {
+          let cached = codeCache.get(entry.id)
+          let code = cached?.step === step ? cached.code : await generateCode(entry, step, version)
+          if (version !== epoch || !key) return
+          if (step !== Math.floor(Date.now() / 1000 / entry.period)) {
+            step = Math.floor(Date.now() / 1000 / entry.period)
+            code = await generateCode(entry, step, version)
+          }
+          if (version !== epoch || !key) return
+          try {
+            if (!navigator.clipboard?.writeText) throw Error('Clipboard API unavailable')
+            await navigator.clipboard.writeText(code)
+          } catch {
+            const field = document.createElement('textarea')
+            field.value = code
+            field.style.cssText = 'position:fixed;left:-9999px;top:0'
+            document.body.append(field)
+            field.select()
+            const success = document.execCommand('copy')
+            field.remove()
+            if (!success) throw Error('Clipboard unavailable')
+          }
+          button.classList.add('copied')
+          setTimeout(() => button.classList.remove('copied'), 850)
+          notify('Code copied')
+        } catch (error) {
+          notify(error.message || 'Could not copy code', true)
+        }
+      }
+      function makeRow(entry) {
+        const row = document.createElement('article')
+        row.className = 'account'
+        row.dataset.id = entry.id
+        row.innerHTML =
+          '<span class="avatar" aria-hidden="true"></span><div class="identity"><div class="issuer"></div><div class="account-name"></div></div><button class="code-button" type="button" title="Copy code"><span class="code">··· ···</span><span class="timer"><span class="progress-track" aria-hidden="true"><span class="progress-fill"></span></span><span class="seconds">--s</span></span></button><details class="row-menu"><summary class="icon-button" aria-label="Account options" title="Account options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.55"/><circle cx="12" cy="12" r="1.55"/><circle cx="19" cy="12" r="1.55"/></svg></summary><div class="row-actions"><button type="button" class="rename-action">Rename</button><button type="button" class="remove-action">Remove local copy</button></div></details>'
+        const title = entry.displayName || entry.issuer
+        row.querySelector('.avatar').textContent = title.slice(0, 1).toUpperCase() || '•'
+        row.querySelector('.issuer').textContent = title
+        row.querySelector('.account-name').textContent = entry.name
+        const codeButton = row.querySelector('.code-button')
+        codeButton.setAttribute('aria-label', 'Copy ' + entry.issuer + ' code for ' + entry.name)
+        codeButton.addEventListener('click', () => copyCode(entry, codeButton))
+        const opts = row.querySelector('.row-menu')
+        opts.querySelector('.rename-action').addEventListener('click', () => {
+          opts.open = false
+          renameId = entry.id
+          $('renameContext').textContent = 'Imported: ' + entry.issuer + ' · ' + entry.name
+          $('renameName').value = entry.displayName || entry.issuer
+          $('renameError').textContent = ''
+          $('renameDialog').showModal()
+          $('renameName').focus()
+          $('renameName').select()
+        })
+        opts.querySelector('.remove-action').addEventListener('click', () => {
+          opts.open = false
+          removeId = entry.id
+          $('removeDescription').textContent =
+            entry.issuer + ' · ' + entry.name + '\nOnly the local copy will be removed. Your phone authenticator is unchanged.'
+          $('removeDescription').style.whiteSpace = 'pre-line'
+          $('removeError').textContent = ''
+          $('removeDialog').showModal()
+        })
+        return row
+      }
+      function render() {
+        if (!key) return
+        const query = normalize($('search').value)
+        const matches = accounts
+          .filter((a) => normalize((a.displayName || '') + ' ' + a.issuer + ' ' + a.name).includes(query))
+          .sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || a.issuer.localeCompare(b.issuer) || a.name.localeCompare(b.name))
+        $('count').textContent = query
+          ? matches.length + ' of ' + accounts.length + ' accounts'
+          : accounts.length + (accounts.length === 1 ? ' account' : ' accounts')
+        $('rows').replaceChildren(...matches.map(makeRow))
+        $('rows').hidden = matches.length === 0
+        $('empty').hidden = matches.length > 0
+        $('emptyTitle').textContent = query ? 'No matches' : 'No accounts yet'
+        $('emptyDescription').textContent = query ? 'Try another search.' : 'Create accounts on your phone, then import their TOTP links here.'
+        $('emptyImport').hidden = Boolean(query)
+        updateCodes()
+      }
+      async function updateCodes() {
+        if (ticking || !key || document.visibilityState === 'hidden') return
+        ticking = true
+        const version = epoch
+        const rows = [...$('rows').children]
+        const now = Date.now() / 1000
+        try {
+          await Promise.all(
+            rows.map(async (row) => {
+              const entry = accounts.find((a) => a.id === row.dataset.id)
+              if (!entry) return
+              const seconds = entry.period - (Math.floor(now) % entry.period)
+              const remaining = row.querySelector('.seconds')
+              remaining.textContent = seconds + 's'
+              remaining.classList.toggle('warning', seconds <= 5)
+              const progress = row.querySelector('.progress-fill')
+              progress.style.width = (seconds * 100) / entry.period + '%'
+              progress.style.backgroundColor = seconds <= 5 ? 'var(--danger)' : 'var(--accent)'
+              const step = Math.floor(now / entry.period)
+              const cached = codeCache.get(entry.id)
+              if (cached?.step === step) {
+                row.querySelector('.code').textContent = grouped(cached.code)
+                return
+              }
+              row.querySelector('.code').textContent = '··· ···'
+              try {
+                const code = await generateCode(entry, step, version)
+                if (version !== epoch || !row.isConnected || step !== Math.floor(Date.now() / 1000 / entry.period)) return
+                codeCache.set(entry.id, { step, code })
+                row.querySelector('.code').textContent = grouped(code)
+              } catch {
+                if (version === epoch && row.isConnected) row.querySelector('.code').textContent = 'Unavailable'
+              }
+            }),
+          )
+        } finally {
+          ticking = false
+        }
+      }
+      function parseLines(text) {
+        const lines = text
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+        if (!lines.length) return []
+        if (lines.length > 100) throw Error('Import up to 100 links at a time')
+        const parsed = lines.map((line, i) => {
+          if (line.length > 1800) throw Error('Link ' + (i + 1) + ' is too long')
+          try {
+            return parseURI(line)
+          } catch (error) {
+            throw Error('Line ' + (i + 1) + ': ' + error.message)
+          }
+        })
+        const seen = new Map()
+        for (const entry of parsed) {
+          const id = accountKey(entry)
+          const prior = seen.get(id)
+          if (prior && !sameCredential(entry, prior)) throw Error('Multiple different keys for ' + entry.issuer + ' / ' + entry.name)
+          if (!prior) seen.set(id, entry)
+        }
+        return [...seen.values()]
+      }
+      function updatePreview() {
+        $('importError').textContent = ''
+        $('previewItems').replaceChildren()
+        previewEntries = []
+        previewUpdates = []
+        $('preview').hidden = true
+        $('replaceLabel').hidden = true
+        $('importSubmit').disabled = true
+        if (!$('links').value.trim()) {
+          $('importSubmit').textContent = 'Import'
+          return
+        }
+        try {
+          const parsed = parseLines($('links').value)
+          const current = new Map(accounts.map((a) => [accountKey(a), a]))
+          const added = [],
+            updated = [],
+            unchanged = []
+          for (const entry of parsed) {
+            const old = current.get(accountKey(entry))
+            if (!old) added.push(entry)
+            else if (sameCredential(old, entry)) unchanged.push(entry)
+            else updated.push(entry)
+          }
+          previewEntries = added
+          previewUpdates = updated
+          $('previewHead').textContent = [
+            added.length && added.length + ' new',
+            updated.length && updated.length + ' changed',
+            unchanged.length && unchanged.length + ' already saved',
+          ]
+            .filter(Boolean)
+            .join(' · ')
+          for (const entry of [...added, ...updated]) {
+            const line = document.createElement('div')
+            line.className = 'preview-row'
+            const issuer = document.createElement('span')
+            issuer.className = 'preview-issuer'
+            issuer.textContent = entry.issuer
+            const name = document.createElement('span')
+            name.className = 'preview-account'
+            name.textContent = entry.name
+            line.append(issuer, name)
+            $('previewItems').append(line)
+          }
+          $('preview').hidden = false
+          $('replaceLabel').hidden = !updated.length
+          $('replaceText').textContent =
+            'Replace ' +
+            updated.length +
+            (updated.length === 1 ? ' existing account' : ' existing accounts') +
+            ' with the imported key' +
+            (updated.length === 1 ? '' : 's')
+          const allowed = added.length + ($('replaceCheck').checked ? updated.length : 0)
+          $('importSubmit').textContent = allowed ? 'Import ' + allowed : 'Import'
+          $('importSubmit').disabled = allowed === 0
+        } catch (error) {
+          $('importError').textContent = error.message
+        }
+      }
+      function showImport() {
+        if (!key) return
+        $('links').value = ''
+        $('replaceCheck').checked = false
+        updatePreview()
+        $('importDialog').showModal()
+        $('links').focus()
+      }
+      function exportBackup() {
+        $('menu').open = false
+        try {
+          if (!loadedBlob) throw Error('No vault to export')
+          const url = URL.createObjectURL(new Blob([loadedBlob], { type: 'application/json' }))
+          const link = document.createElement('a')
+          link.href = url
+          link.download = 'otp-backup-' + new Date().toISOString().slice(0, 10) + '.json'
+          document.body.append(link)
+          link.click()
+          link.remove()
+          setTimeout(() => URL.revokeObjectURL(url), 1500)
+          notify('Encrypted backup exported')
+        } catch (error) {
+          notify(error.message, true)
+        }
+      }
+
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest('#menu')) $('menu').open = false
+        for (const expanded of document.querySelectorAll('.row-menu[open]')) if (!expanded.contains(event.target)) expanded.open = false
+      })
+      $('vaultForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        $('vaultError').textContent = ''
+        const submit = $('vaultSubmit')
+        submit.disabled = true
+        try {
+          const password = $('password').value
+          loadedBlob = storage()
+          if (loadedBlob) {
+            const result = await openVault(password, loadedBlob)
+            key = result.key
+            salt = result.salt
+            accounts = result.accounts
+          } else {
+            if (password.length < 6) throw Error('Use at least 6 characters')
+            if (password !== $('confirmPassword').value) throw Error('Passwords do not match')
+            const newSalt = random(16)
+            const newKey = await derive(password, newSalt)
+            const encrypted = await seal([], newKey, newSalt)
+            if (storage()) throw Error('Vault was created in another tab. Reload to unlock.')
+            localStorage.setItem(STORE, encrypted)
+            loadedBlob = encrypted
+            salt = newSalt
+            key = newKey
+            accounts = []
+          }
+          unlockUI()
+        } catch (error) {
+          $('vaultError').textContent = error.name === 'OperationError' ? 'Incorrect password or damaged vault' : error.message || 'Could not open vault'
+        } finally {
+          submit.disabled = false
+        }
+      })
+      $('lockButton').addEventListener('click', lock)
+      $('importButton').addEventListener('click', showImport)
+      $('emptyImport').addEventListener('click', showImport)
+      $('search').addEventListener('input', render)
+      for (const button of document.querySelectorAll('[data-close]')) button.addEventListener('click', () => $(button.dataset.close).close())
+      $('importDialog').addEventListener('close', () => {
+        $('links').value = ''
+        previewEntries = []
+        previewUpdates = []
+        $('importError').textContent = ''
+      })
+      $('links').addEventListener('input', updatePreview)
+      $('replaceCheck').addEventListener('change', updatePreview)
+      $('importForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        $('importError').textContent = ''
+        const submit = $('importSubmit')
+        submit.disabled = true
+        try {
+          // Re-parse on submit so every import uses the current textarea value.
+          const parsed = parseLines($('links').value)
+          const byName = new Map(accounts.map((a) => [accountKey(a), a]))
+          let added = 0,
+            changed = 0
+          for (const entry of parsed) {
+            const id = accountKey(entry)
+            const prior = byName.get(id)
+            if (!prior) {
+              byName.set(id, entry)
+              added++
+            } else if (!sameCredential(prior, entry) && $('replaceCheck').checked) {
+              byName.set(id, { ...entry, id: prior.id, pinned: prior.pinned, ...(prior.displayName ? { displayName: prior.displayName } : {}) })
+              changed++
+            }
+          }
+          if (!added && !changed) throw Error('No new links to import')
+          if (byName.size > 5000) throw Error('The vault has reached its account limit')
+          await save([...byName.values()])
+          $('importDialog').close()
+          notify(added + changed + (added + changed === 1 ? ' account imported' : ' accounts imported'))
+        } catch (error) {
+          $('importError').textContent = error.message || 'Import failed'
+        } finally {
+          updatePreview()
+        }
+      })
+      $('renameDialog').addEventListener('close', () => {
+        renameId = null
+        $('renameError').textContent = ''
+      })
+      $('renameForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        if (!renameId || !key) return
+        const submit = $('renameSubmit')
+        submit.disabled = true
+        $('renameError').textContent = ''
+        try {
+          const label = $('renameName').value.trim()
+          if (!label || label.length > 80) throw Error('Enter a name of up to 80 characters')
+          const existing = accounts.find((a) => a.id === renameId)
+          if (!existing) throw Error('Account no longer exists')
+          const updated = accounts.map((a) => {
+            if (a.id !== renameId) return a
+            const next = { ...a }
+            if (label === a.issuer) delete next.displayName
+            else next.displayName = label
+            return next
+          })
+          await save(updated)
+          $('renameDialog').close()
+          notify('Name updated')
+        } catch (error) {
+          $('renameError').textContent = error.message || 'Could not rename account'
+        } finally {
+          submit.disabled = false
+        }
+      })
+      $('removeDialog').addEventListener('close', () => (removeId = null))
+      $('confirmRemove').addEventListener('click', async () => {
+        if (!removeId || !key) return
+        $('confirmRemove').disabled = true
+        $('removeError').textContent = ''
+        try {
+          await save(accounts.filter((a) => a.id !== removeId))
+          $('removeDialog').close()
+          notify('Local copy removed')
+        } catch (error) {
+          $('removeError').textContent = error.message
+        } finally {
+          $('confirmRemove').disabled = false
+        }
+      })
+      $('exportButton').addEventListener('click', exportBackup)
+      $('restoreButton').addEventListener('click', () => {
+        $('menu').open = false
+        $('backupFile').click()
+      })
+      $('backupFile').addEventListener('change', async (event) => {
+        const file = event.target.files?.[0]
+        event.target.value = ''
+        if (!file) return
+        try {
+          if (file.size > 2_000_000) throw Error('Backup file is too large')
+          const text = await file.text()
+          validateRecord(text)
+          pendingBackup = text
+          verifiedBackup = null
+          $('restorePassword').value = ''
+          $('restoreError').textContent = ''
+          $('restoreDescription').textContent = 'Enter the password used to encrypt this backup.'
+          $('restoreSubmit').textContent = 'Verify backup'
+          $('restoreDialog').showModal()
+        } catch (error) {
+          notify(error.message || 'Could not read backup', true)
+        }
+      })
+      $('restoreDialog').addEventListener('close', () => {
+        pendingBackup = verifiedBackup = null
+        $('restorePassword').value = ''
+      })
+      $('restoreForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        $('restoreError').textContent = ''
+        const button = $('restoreSubmit')
+        button.disabled = true
+        try {
+          if (!pendingBackup) throw Error('Choose a backup first')
+          if (!verifiedBackup) {
+            const result = await openVault($('restorePassword').value, pendingBackup)
+            verifiedBackup = { count: result.accounts.length, blob: pendingBackup }
+            $('restorePassword').value = ''
+            $('restorePassword').hidden = true
+            document.querySelector('label[for="restorePassword"]').hidden = true
+            $('restorePassword').required = false
+            $('restoreDescription').textContent = 'Backup verified: ' + result.accounts.length + ' accounts. Restoring will replace the entire local vault.'
+            button.textContent = 'Replace local vault'
+          } else {
+            localStorage.setItem(STORE, verifiedBackup.blob)
+            loadedBlob = verifiedBackup.blob
+            $('restoreDialog').close()
+            lock()
+            notify('Backup restored. Unlock with its password.')
+          }
+        } catch (error) {
+          $('restoreError').textContent = error.name === 'OperationError' ? 'Incorrect backup password or damaged file' : error.message || 'Restore failed'
+        } finally {
+          button.disabled = false
+        }
+      })
+      // Fully restore the two-step form on every opening (including after cancel).
+      $('restoreDialog').addEventListener('close', () => {
+        $('restorePassword').hidden = false
+        $('restorePassword').required = true
+        document.querySelector('label[for="restorePassword"]').hidden = false
+        $('restoreSubmit').textContent = 'Verify backup'
+      })
+      document.addEventListener('keydown', (event) => {
+        if (!key) return
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault()
+          $('search').focus()
+          $('search').select()
+        } else if (
+          event.key === '/' &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) &&
+          !document.querySelector('dialog[open]')
+        ) {
+          event.preventDefault()
+          $('search').focus()
+        }
+      })
+      for (const type of ['pointerdown', 'keydown', 'wheel']) document.addEventListener(type, rememberActivity, { passive: true })
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible' || !key) return
+        if (Date.now() - lastActivity >= AUTO_LOCK) {
+          lock()
+          notify('Vault locked after inactivity')
+        } else updateCodes()
+      })
+      window.addEventListener('storage', (event) => {
+        if (event.key === STORE && key && event.newValue !== loadedBlob) {
+          loadedBlob = storage()
+          lock()
+          notify('Vault changed in another tab. Unlock again.')
+        }
+      })
+      async function init() {
+        $('searchShortcut').textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘ K' : 'Ctrl K'
+        if (!globalThis.crypto?.subtle) {
+          $('vaultError').textContent = 'Web Crypto is unavailable. Open this file in a recent Chrome or Edge browser.'
+          $('vaultSubmit').disabled = true
+          return
+        }
+        try {
+          loadedBlob = storage()
+          lock()
+        } catch {
+          $('vaultError').textContent = 'Browser storage is blocked. Allow local storage to continue.'
+          $('vaultSubmit').disabled = true
+        }
+        setInterval(() => {
+          if (!key) return
+          if (Date.now() - lastActivity >= AUTO_LOCK) {
+            lock()
+            notify('Vault locked after inactivity')
+            return
+          }
+          updateCodes()
+        }, 800)
+      }
+      init()
+    </script>
+  </body>
+</html>
