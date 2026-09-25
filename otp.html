@@ -935,9 +935,6 @@
             <div class="preview-head" id="previewHead"></div>
             <div id="previewItems"></div>
           </div>
-          <label class="replace" id="replaceLabel" hidden
-            ><input type="checkbox" id="replaceCheck" /><span id="replaceText">Replace existing account keys</span></label
-          >
           <div class="error" id="importError" role="alert"></div>
           <div class="modal-actions">
             <button type="button" class="button secondary" data-close="importDialog">Cancel</button
@@ -1008,7 +1005,7 @@
       // No network requests, dependencies, service worker, or external resources.
       // Keep the original vault schema for compatibility with earlier versions.
       const $ = (id) => document.getElementById(id)
-      const STORE = 'zce-otp'
+      const STORE = 'otp-desk.v1'
       const AUTO_LOCK = 10 * 60 * 1000
       const encoder = new TextEncoder()
       const decoder = new TextDecoder()
@@ -1021,8 +1018,7 @@
       let epoch = 0,
         lastActivity = 0,
         ticking = false
-      let previewEntries = [],
-        previewUpdates = []
+      let previewEntries = []
       let removeId = null,
         renameId = null,
         pendingBackup = null,
@@ -1037,8 +1033,9 @@
       const random = (n) => crypto.getRandomValues(new Uint8Array(n))
       const storage = () => localStorage.getItem(STORE)
       const normalize = (text) => String(text).trim().toLocaleLowerCase()
-      const accountKey = (a) => normalize(a.issuer) + '\0' + normalize(a.name)
-      const sameCredential = (a, b) => a.secret === b.secret && a.algorithm === b.algorithm && a.digits === b.digits && a.period === b.period
+      // Labels are not unique across environments. Only an identical imported
+      // credential is a duplicate; local display names never affect identity.
+      const accountKey = (a) => JSON.stringify([normalize(a.issuer), normalize(a.name), a.secret, a.algorithm, a.digits, a.period])
       function notify(message, bad = false) {
         const t = $('toast')
         t.textContent = message
@@ -1172,7 +1169,6 @@
         codeCache.clear()
         lastActivity = 0
         previewEntries = []
-        previewUpdates = []
         verifiedBackup = null
         for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close()
         $('rows').replaceChildren()
@@ -1377,9 +1373,7 @@
         const seen = new Map()
         for (const entry of parsed) {
           const id = accountKey(entry)
-          const prior = seen.get(id)
-          if (prior && !sameCredential(entry, prior)) throw Error('Multiple different keys for ' + entry.issuer + ' / ' + entry.name)
-          if (!prior) seen.set(id, entry)
+          if (!seen.has(id)) seen.set(id, entry)
         }
         return [...seen.values()]
       }
@@ -1387,9 +1381,7 @@
         $('importError').textContent = ''
         $('previewItems').replaceChildren()
         previewEntries = []
-        previewUpdates = []
         $('preview').hidden = true
-        $('replaceLabel').hidden = true
         $('importSubmit').disabled = true
         if (!$('links').value.trim()) {
           $('importSubmit').textContent = 'Import'
@@ -1399,24 +1391,16 @@
           const parsed = parseLines($('links').value)
           const current = new Map(accounts.map((a) => [accountKey(a), a]))
           const added = [],
-            updated = [],
             unchanged = []
           for (const entry of parsed) {
-            const old = current.get(accountKey(entry))
-            if (!old) added.push(entry)
-            else if (sameCredential(old, entry)) unchanged.push(entry)
-            else updated.push(entry)
+            if (current.has(accountKey(entry))) unchanged.push(entry)
+            else added.push(entry)
           }
           previewEntries = added
-          previewUpdates = updated
-          $('previewHead').textContent = [
-            added.length && added.length + ' new',
-            updated.length && updated.length + ' changed',
-            unchanged.length && unchanged.length + ' already saved',
-          ]
+          $('previewHead').textContent = [added.length && added.length + ' new', unchanged.length && unchanged.length + ' already saved']
             .filter(Boolean)
             .join(' · ')
-          for (const entry of [...added, ...updated]) {
+          for (const entry of added) {
             const line = document.createElement('div')
             line.className = 'preview-row'
             const issuer = document.createElement('span')
@@ -1429,14 +1413,7 @@
             $('previewItems').append(line)
           }
           $('preview').hidden = false
-          $('replaceLabel').hidden = !updated.length
-          $('replaceText').textContent =
-            'Replace ' +
-            updated.length +
-            (updated.length === 1 ? ' existing account' : ' existing accounts') +
-            ' with the imported key' +
-            (updated.length === 1 ? '' : 's')
-          const allowed = added.length + ($('replaceCheck').checked ? updated.length : 0)
+          const allowed = added.length
           $('importSubmit').textContent = allowed ? 'Import ' + allowed : 'Import'
           $('importSubmit').disabled = allowed === 0
         } catch (error) {
@@ -1446,7 +1423,6 @@
       function showImport() {
         if (!key) return
         $('links').value = ''
-        $('replaceCheck').checked = false
         updatePreview()
         $('importDialog').showModal()
         $('links').focus()
@@ -1487,7 +1463,7 @@
             salt = result.salt
             accounts = result.accounts
           } else {
-            if (password.length < 6) throw Error('Use at least 6 characters')
+            if (password.length < 8) throw Error('Use at least 8 characters')
             if (password !== $('confirmPassword').value) throw Error('Passwords do not match')
             const newSalt = random(16)
             const newKey = await derive(password, newSalt)
@@ -1514,11 +1490,9 @@
       $('importDialog').addEventListener('close', () => {
         $('links').value = ''
         previewEntries = []
-        previewUpdates = []
         $('importError').textContent = ''
       })
       $('links').addEventListener('input', updatePreview)
-      $('replaceCheck').addEventListener('change', updatePreview)
       $('importForm').addEventListener('submit', async (event) => {
         event.preventDefault()
         $('importError').textContent = ''
@@ -1527,25 +1501,20 @@
         try {
           // Re-parse on submit so every import uses the current textarea value.
           const parsed = parseLines($('links').value)
-          const byName = new Map(accounts.map((a) => [accountKey(a), a]))
-          let added = 0,
-            changed = 0
+          const byCredential = new Map(accounts.map((a) => [accountKey(a), a]))
+          let added = 0
           for (const entry of parsed) {
             const id = accountKey(entry)
-            const prior = byName.get(id)
-            if (!prior) {
-              byName.set(id, entry)
+            if (!byCredential.has(id)) {
+              byCredential.set(id, entry)
               added++
-            } else if (!sameCredential(prior, entry) && $('replaceCheck').checked) {
-              byName.set(id, { ...entry, id: prior.id, pinned: prior.pinned, ...(prior.displayName ? { displayName: prior.displayName } : {}) })
-              changed++
             }
           }
-          if (!added && !changed) throw Error('No new links to import')
-          if (byName.size > 5000) throw Error('The vault has reached its account limit')
-          await save([...byName.values()])
+          if (!added) throw Error('No new links to import')
+          if (byCredential.size > 5000) throw Error('The vault has reached its account limit')
+          await save([...byCredential.values()])
           $('importDialog').close()
-          notify(added + changed + (added + changed === 1 ? ' account imported' : ' accounts imported'))
+          notify(added + (added === 1 ? ' account imported' : ' accounts imported'))
         } catch (error) {
           $('importError').textContent = error.message || 'Import failed'
         } finally {
