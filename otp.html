@@ -1036,6 +1036,9 @@
       // Labels are not unique across environments. Only an identical imported
       // credential is a duplicate; local display names never affect identity.
       const accountKey = (a) => JSON.stringify([normalize(a.issuer), normalize(a.name), a.secret, a.algorithm, a.digits, a.period])
+      const defaultTitle = (a) => a.labelPrefix || a.issuer
+      const displayTitle = (a) => a.displayName || defaultTitle(a)
+      const updatedLabel = (prior, imported) => Boolean(imported.labelPrefix && imported.labelPrefix !== prior.labelPrefix)
       function notify(message, bad = false) {
         const t = $('toast')
         t.textContent = message
@@ -1092,8 +1095,8 @@
         const period = Number(url.searchParams.get('period') || 30)
         if (!['SHA1', 'SHA256', 'SHA512'].includes(algorithm) || ![6, 8].includes(digits) || !Number.isInteger(period) || period < 15 || period > 120)
           throw Error('Unsupported TOTP parameters')
-        if (issuer.length > 80 || name.length > 120) throw Error('Account name is too long')
-        return { id: b64(random(12)), issuer, name: name || issuer, secret, algorithm, digits, period }
+        if (issuer.length > 80 || prefix.length > 80 || name.length > 120) throw Error('Account name is too long')
+        return { id: b64(random(12)), issuer, name: name || issuer, ...(prefix ? { labelPrefix: prefix } : {}), secret, algorithm, digits, period }
       }
       async function derive(password, randomSalt) {
         const material = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey'])
@@ -1136,6 +1139,7 @@
               typeof a.name === 'string' &&
               a.name.length <= 120 &&
               (a.displayName === undefined || (typeof a.displayName === 'string' && a.displayName.length <= 80)) &&
+              (a.labelPrefix === undefined || (typeof a.labelPrefix === 'string' && a.labelPrefix.length <= 80)) &&
               typeof a.secret === 'string' &&
               a.secret.length <= 1024 &&
               ['SHA1', 'SHA256', 'SHA512'].includes(a.algorithm) &&
@@ -1270,7 +1274,7 @@
         row.dataset.id = entry.id
         row.innerHTML =
           '<span class="avatar" aria-hidden="true"></span><div class="identity"><div class="issuer"></div><div class="account-name"></div></div><button class="code-button" type="button" title="Copy code"><span class="code">··· ···</span><span class="timer"><span class="progress-track" aria-hidden="true"><span class="progress-fill"></span></span><span class="seconds">--s</span></span></button><details class="row-menu"><summary class="icon-button" aria-label="Account options" title="Account options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.55"/><circle cx="12" cy="12" r="1.55"/><circle cx="19" cy="12" r="1.55"/></svg></summary><div class="row-actions"><button type="button" class="rename-action">Rename</button><button type="button" class="remove-action">Remove local copy</button></div></details>'
-        const title = entry.displayName || entry.issuer
+        const title = displayTitle(entry)
         row.querySelector('.avatar').textContent = title.slice(0, 1).toUpperCase() || '•'
         row.querySelector('.issuer').textContent = title
         row.querySelector('.account-name').textContent = entry.name
@@ -1282,7 +1286,7 @@
           opts.open = false
           renameId = entry.id
           $('renameContext').textContent = 'Imported: ' + entry.issuer + ' · ' + entry.name
-          $('renameName').value = entry.displayName || entry.issuer
+          $('renameName').value = displayTitle(entry)
           $('renameError').textContent = ''
           $('renameDialog').showModal()
           $('renameName').focus()
@@ -1303,8 +1307,8 @@
         if (!key) return
         const query = normalize($('search').value)
         const matches = accounts
-          .filter((a) => normalize((a.displayName || '') + ' ' + a.issuer + ' ' + a.name).includes(query))
-          .sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || a.issuer.localeCompare(b.issuer) || a.name.localeCompare(b.name))
+          .filter((a) => normalize(displayTitle(a) + ' ' + (a.labelPrefix || '') + ' ' + a.issuer + ' ' + a.name).includes(query))
+          .sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || defaultTitle(a).localeCompare(defaultTitle(b)) || a.name.localeCompare(b.name))
         $('count').textContent = query
           ? matches.length + ' of ' + accounts.length + ' accounts'
           : accounts.length + (accounts.length === 1 ? ' account' : ' accounts')
@@ -1373,7 +1377,7 @@
         const seen = new Map()
         for (const entry of parsed) {
           const id = accountKey(entry)
-          if (!seen.has(id)) seen.set(id, entry)
+          if (!seen.has(id) || (!seen.get(id).labelPrefix && entry.labelPrefix)) seen.set(id, entry)
         }
         return [...seen.values()]
       }
@@ -1391,21 +1395,24 @@
           const parsed = parseLines($('links').value)
           const current = new Map(accounts.map((a) => [accountKey(a), a]))
           const added = [],
+            updated = [],
             unchanged = []
           for (const entry of parsed) {
-            if (current.has(accountKey(entry))) unchanged.push(entry)
-            else added.push(entry)
+            const prior = current.get(accountKey(entry))
+            if (!prior) added.push(entry)
+            else if (updatedLabel(prior, entry)) updated.push(entry)
+            else unchanged.push(entry)
           }
           previewEntries = added
-          $('previewHead').textContent = [added.length && added.length + ' new', unchanged.length && unchanged.length + ' already saved']
+          $('previewHead').textContent = [added.length && added.length + ' new', updated.length && updated.length + ' labels updated', unchanged.length && unchanged.length + ' already saved']
             .filter(Boolean)
             .join(' · ')
-          for (const entry of added) {
+          for (const entry of [...added, ...updated]) {
             const line = document.createElement('div')
             line.className = 'preview-row'
             const issuer = document.createElement('span')
             issuer.className = 'preview-issuer'
-            issuer.textContent = entry.issuer
+            issuer.textContent = defaultTitle(entry)
             const name = document.createElement('span')
             name.className = 'preview-account'
             name.textContent = entry.name
@@ -1413,7 +1420,7 @@
             $('previewItems').append(line)
           }
           $('preview').hidden = false
-          const allowed = added.length
+          const allowed = added.length + updated.length
           $('importSubmit').textContent = allowed ? 'Import ' + allowed : 'Import'
           $('importSubmit').disabled = allowed === 0
         } catch (error) {
@@ -1502,19 +1509,24 @@
           // Re-parse on submit so every import uses the current textarea value.
           const parsed = parseLines($('links').value)
           const byCredential = new Map(accounts.map((a) => [accountKey(a), a]))
-          let added = 0
+          let added = 0,
+            updated = 0
           for (const entry of parsed) {
             const id = accountKey(entry)
-            if (!byCredential.has(id)) {
+            const prior = byCredential.get(id)
+            if (!prior) {
               byCredential.set(id, entry)
               added++
+            } else if (updatedLabel(prior, entry)) {
+              byCredential.set(id, { ...prior, labelPrefix: entry.labelPrefix })
+              updated++
             }
           }
-          if (!added) throw Error('No new links to import')
+          if (!added && !updated) throw Error('No new or updated links to import')
           if (byCredential.size > 5000) throw Error('The vault has reached its account limit')
           await save([...byCredential.values()])
           $('importDialog').close()
-          notify(added + (added === 1 ? ' account imported' : ' accounts imported'))
+          notify([added && added + ' added', updated && updated + ' labels updated'].filter(Boolean).join(' · '))
         } catch (error) {
           $('importError').textContent = error.message || 'Import failed'
         } finally {
@@ -1539,7 +1551,7 @@
           const updated = accounts.map((a) => {
             if (a.id !== renameId) return a
             const next = { ...a }
-            if (label === a.issuer) delete next.displayName
+            if (label === defaultTitle(a)) delete next.displayName
             else next.displayName = label
             return next
           })
