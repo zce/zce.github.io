@@ -1,28 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-log() { printf '==> %s\n' "$*"; }
-fail() { printf 'Error: %s\n' "$*" >&2; exit 1; }
-
-command -v git >/dev/null 2>&1 || fail "git is required."
-command -v curl >/dev/null 2>&1 || fail "curl is required."
-
-DOTFILES_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/.dotfiles"
-
-if [[ -d "$DOTFILES_DIR" ]]; then
-  fail "dotfiles bare repo already exists at $DOTFILES_DIR. Aborting to avoid overwrite."
+if (( EUID == 0 )); then
+  printf 'Run this as the Fedora desktop user, not root.\n' >&2
+  exit 1
+fi
+if [[ -z ${DBUS_SESSION_BUS_ADDRESS:-} ]] || ! systemctl --user show-environment >/dev/null; then
+  printf 'Run this in a signed-in GNOME desktop session.\n' >&2
+  exit 1
 fi
 
-log "Cloning dotfiles bare repo"
-git clone --bare https://github.com/zce/dotfiles.git "$DOTFILES_DIR"
+cd -- "$HOME"
+repo="${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles.git"
+if [[ -e "$repo" || -L "$repo" ]]; then
+  printf 'Dotfiles repository already exists: %s\n' "$repo" >&2
+  exit 1
+fi
 
-dot() { git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"; }
+if ! command -v git >/dev/null; then
+  sudo dnf install -y git
+fi
 
-log "Checking out dotfiles to $HOME"
-dot checkout
-dot config --local status.showUntrackedFiles no
+mkdir -p -- "$(dirname -- "$repo")"
+GIT_ASKPASS= SSH_ASKPASS= GIT_TERMINAL_PROMPT=1 \
+  git -c credential.helper= clone --bare --origin origin \
+    --config 'remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*' \
+    -- 'https://github.com/zce/dotfiles.git' "$repo"
 
-log "Running bootstrap"
-bash "$HOME/.local/z-labs/bootstrap.sh"
+branch=$(git --git-dir="$repo" symbolic-ref --short HEAD)
+git --git-dir="$repo" branch --set-upstream-to="origin/$branch"
+git --git-dir="$repo" --work-tree="$HOME" checkout --no-overwrite-ignore
 
-printf '\nRestore complete. Reboot recommended.\n'
+"$HOME/.local/bin/dot" rev-parse --abbrev-ref --symbolic-full-name '@{u}'
+bash "$HOME/.local/bootstrap.sh"
